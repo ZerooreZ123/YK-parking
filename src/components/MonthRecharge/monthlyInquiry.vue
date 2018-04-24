@@ -7,31 +7,45 @@
           <div class="forExample">例:苏A8888</div>
           <div class="promptText">选择车场</div>
           <div class="carYardList" >
-              <div class="selectYard" v-for="item in carYardName" :key="item.id">{{item.name}}</div>
+              <div @click="select(index)" :class="selectIndex === index?'selectYard':'carYard'" v-for="(item,index) in carYardName" :key="index">{{item.name}}</div>
           </div>
       </div>
-      <div class="button">查询</div>
+      <div @click="query" class="button">查询</div>
       <tip-mes :msg="message" v-if="isDisplay"></tip-mes>
   </div>
 </template>
 <script>
-import TipMes from "@/components/common/tipMes";
+import TipMes from '@/components/common/tipMes'
 export default {
-  name: "MonthlyInquiry",
+  name: 'MonthlyInquiry',
   components: {
     TipMes
   },
-  data() {
+  data () {
     return {
       carYardName: [
-        { name: "创意中央", id: 1 },
-        { name: "创意东八区", id: 2 },
-        { name: "星火E方", id: 3 },
-        { name: "西祠街道", id: 4 }
+        { name: '创意中央' },
+        { name: '创意东八区' },
+        { name: '星火E方' },
+        { name: '西祠街道' }
       ],
-      message: "抱歉，未找到该车辆包月信息",
-      isDisplay: true
+      message: '抱歉，未找到该车辆包月信息',
+      isDisplay: false,
+      selectIndex: 0
     };
+  },
+  methods: {
+    select: function(index) {
+      const that = this;
+      that.selectIndex = index;
+    },
+    query: function() {
+      const that = this;
+      that.isDisplay = true;
+      setTimeout(function() {
+        that.isDisplay = false;
+      }, 1.5e3)
+    }
   }
 };
 </script>

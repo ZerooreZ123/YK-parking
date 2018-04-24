@@ -9,8 +9,8 @@
             </div>
             <div class="tip">请于缴费成功后的15分钟内离场哦</div>
             <div class="selectButton">
-                <div class="abolish">取消</div>
-                <div class="sure">确认支付</div>
+                <div @click="cancel(isCancel)" class="abolish">取消</div>
+                <div @click="confirmPay(money)" class="sure">确认支付</div>
             </div>
         </div>
     </div>
@@ -20,30 +20,42 @@ export default {
   name: "MaskBox",
   props: ["data"],
   data() {
-    return {};
+    return {
+      isCancel: false,
+      money: '15元'
+    };
+  },
+  methods: {
+    cancel(state) {
+      this.$emit('oncancel', state)
+    },
+    confirmPay(payMoney) {
+      this.$emit('onconfire', payMoney)
+    }
   }
+
 };
 </script>
 <style scoped>
-.mask {
-  z-index: 100;
-  position: fixed;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.3);
+.mask{
+    z-index:100;
+    position: fixed;
+    left:0;
+    right:0;
+    top: 0;
+    bottom:0;
+    display:flex;
+    justify-content: center;
+    background:rgba(0,0,0,0.3)
 }
-.popUp {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 73%;
-  transform: translate(-50%, -50%);
-  border-radius: 5px;
-  font-size: 34px;
-  background: #fff;
-  overflow: hidden;
+.popUp{
+    width:73%;
+    height:442px;
+    margin-top:332px;
+    border-radius:5px;
+    font-size:34px;
+    background:#FFF;
+    overflow: hidden;
 }
 .dataList {
   padding: 20px 30px;

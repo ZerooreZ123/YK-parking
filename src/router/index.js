@@ -1,12 +1,15 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from '@/components/Home'
+import Home from '@/components/home'
 import Personal from '@/components/OrderCenter/Personal'
 import MonthlyInquiry from '@/components/MonthRecharge/monthlyInquiry'
 import MonthlyRecharge from '@/components/MonthRecharge/monthlyRecharge'
 import MonthlyOrders from '@/components/MonthRecharge/monthlyOrders'
 import TempOrder from '@/components/OrderCenter/TempOrder'
 import SubstituteOrder from '@/components/OrderCenter/SubstituteOrder'
+import TemporaryPay from '@/components/temporaryPay'
+import Surrender from '@/components/surrender'
+import CarManagement from '@/components/carManagement'
 
 Vue.use(Router)
 export default new Router({
@@ -45,6 +48,21 @@ export default new Router({
       path: '/personal/substitute',
       name: 'SubstituteOrder',
       component: SubstituteOrder
+    },
+    {
+      path: '/temporaryPay',
+      name: 'TemporaryPay',
+      component: TemporaryPay
+    },
+    {
+      path: '/surrender',
+      name: 'Surrender',
+      component: Surrender
+    },
+    {
+      path: '/carManagement',
+      name: 'CarManagement',
+      component: CarManagement
     }
   ]
 })

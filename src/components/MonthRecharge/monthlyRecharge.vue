@@ -17,7 +17,7 @@
           </div>
           <div class="promptText">续费时长</div>
           <div class="carYardList" >
-              <div class="selectYard" v-for="item in renewalLength" :key="item.id">{{item.name}}</div>
+              <div @click="select(index)" :class="selectIndex === index?'selectYard':'carYard'" v-for="(item,index) in renewalLength" :key='index'>{{item.name}}</div>
           </div>
       </div>
       <div class="bottomBox">
@@ -29,20 +29,27 @@
 <script>
 export default {
   name: "MonthlyRecharge",
-  data() {
+  data () {
     return {
-      carNum: "苏A 888888",
-      carYard: "创意广场",
-      expiryTime: "2018年6月18日",
+      carNum: '苏A 888888',
+      carYard: '创意广场',
+      expiryTime: '2018年6月18日',
       renewalLength: [
-        { name: "20元/月", id: 1 },
-        { name: "60元/三个月", id: 2 },
-        { name: "120元/6个月", id: 3 },
-        { name: "240元/年", id: 4 }
-      ]
+        { name: '20元/月' },
+        { name: '60元/三个月' },
+        { name: '120元/6个月' },
+        { name: '240元/年' }
+      ],
+      selectIndex: 0
+    }
+  },
+  methods: {
+    select: function(index) {
+      const that = this;
+      that.selectIndex = index;
     }
   }
-};
+}
 </script>
 <style scoped>
 .wrap {

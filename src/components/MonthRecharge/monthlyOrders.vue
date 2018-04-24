@@ -11,7 +11,7 @@
           </div>
       </div>
       <div class="invalidOrder">
-          <div class="item" v-for="item in backOrder" :key="item.math">
+          <div class="item" v-for="(item,index) in backOrder" :key="index">
               <img class="photoGray" v-bind:src="item.photoSrc" alt="">
               <div class="information">
                   <div class="carNumGray">{{item.plateNum}}</div>
@@ -24,35 +24,31 @@
 </template>
 <script>
 export default {
-  name: "MonthlyOrders",
-  data() {
+  name: 'MonthlyOrders',
+  data () {
     return {
       orderList: [
         {
-          photoSrc: require("../../assets/images/icon_order.png"),
-          plateNum: "苏A888888",
-          place: "创意中央",
-          timeslot: "2018.1.12-2018.6.18",
-          match: 1
+          photoSrc: require('../../assets/images/icon_order.png'),
+          plateNum: '苏A888888',
+          place: '创意中央',
+          timeslot: '2018.1.12-2018.6.18'
         },
         {
-          photoSrc: require("../../assets/images/icon_order.png"),
-          plateNum: "苏A888888",
-          place: "创意中央",
-          timeslot: "2018.1.12-2018.6.18",
-          match: 2
+          photoSrc: require('../../assets/images/icon_order.png'),
+          plateNum: '苏A888888',
+          place: '创意中央',
+          timeslot: '2018.1.12-2018.6.18'
         }
       ],
       backOrder: [
         {
-          photoSrc: require("../../assets/images/iconLight.png"),
-          plateNum: "苏A888888",
-          place: "创意中央",
-          timeslot: "2018.1.12-2018.6.18",
-          match: 1
+          photoSrc: require('../../assets/images/iconLight.png'),
+          plateNum: '苏A888888',
+          place: '创意中央',
+          timeslot: '2018.1.12-2018.6.18'
         }
       ]
-
     }
   }
 };
