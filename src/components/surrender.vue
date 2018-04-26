@@ -37,16 +37,13 @@ export default {
   },
   methods: {
     payment() {
-      const that = this;
-      that.isShow = true;
+      this.isShow = true;
     },
     onCancel (isState) {
-      const that = this;
-      that.isShow = isState;
+      this.isShow = isState;
     },
     onConfire(Num) {
-      const that = this;
-      that.isShow = false;
+      this.isShow = false;
       console.log(Num)
     }
   }

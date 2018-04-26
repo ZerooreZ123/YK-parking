@@ -22,7 +22,7 @@
       </div>
       <div class="bottomBox">
           <div class="cancel">取消</div>
-          <div class="confirm">确认支付</div>
+          <div @click="confirmPay" class="confirm">确认支付</div>
       </div>
   </div>
 </template>
@@ -44,9 +44,11 @@ export default {
     }
   },
   methods: {
-    select: function(index) {
-      const that = this;
-      that.selectIndex = index;
+    select(index) {
+      this.selectIndex = index;
+    },
+    confirmPay() {
+      this.$router.push({path: '/monthlyOrders'})
     }
   }
 }

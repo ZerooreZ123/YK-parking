@@ -1,9 +1,13 @@
 <template>
   <div class="layout">
-    <div class="cell" @click="goDetail" :key="index" v-for="(item,index) in list">
-      <img class="cellImage" :src="item.icon" alt=""/>
-      <span class="flexContent textColor textFont">{{item.name}}</span>
-      <img class="cellArrow" :src="require('@/assets/images/cell_arrow.png')" alt=""/>
+    <div :key="index" v-for="(item,index) in list">
+      <router-link class="linkTo" :to='item.link'>
+        <div class="cell">
+          <img class="cellImage" :src="item.icon" alt=""/>
+          <span class="flexContent textColor textFont">{{item.name}}</span>
+          <img class="cellArrow" :src="require('@/assets/images/cell_arrow.png')" alt=""/>
+        </div >
+      </router-link>
     </div>
   </div>
 </template>
@@ -15,16 +19,13 @@ export default {
   data() {
     return {
       list: [
-        { name: '临停订单', icon: require('@/assets/images/personal_temp.png') },
-        { name: '包月订单', icon: require('@/assets/images/personal_month.png') },
-        { name: '代缴订单', icon: require('@/assets/images/personal_substitute.png') }
+        { name: '临停订单', icon: require('@/assets/images/personal_temp.png'), link: '/personal/temp' },
+        { name: '包月订单', icon: require('@/assets/images/personal_month.png'), link: '/monthlyOrders' },
+        { name: '代缴订单', icon: require('@/assets/images/personal_substitute.png'), link: '/personal/substitute' }
       ]
     }
   },
   methods: {
-    goDetail: function () {
-
-    }
   }
 }
 </script>
@@ -43,5 +44,10 @@ export default {
   width: 15px;
   height: 25px;
   margin: 0px 25px 0px 25px;
+}
+.linkTo{
+  display:inline-block;
+  width:100%;
+  text-decoration: none;
 }
 </style>

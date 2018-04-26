@@ -1,9 +1,13 @@
 <template>
-    <div class="mask" >
+    <div class="mask">
         <div @click="cancel(isCancel)" class="blank"></div>
         <div class="popUp">
             <div class="dataList">
-                <div class="data" v-for="(item, index) in data" :key="index">
+                <div class="data">
+                  <div class="dataName">手机号</div>
+                  <input class="inputBox" type="text" placeholder="13478956698">
+                </div>
+                <div class="data" v-for="item in data" :key="item.match">
                     <div class="dataName">{{item.name}}</div>
                     <div class="dataResult">{{item.result}}</div>
                 </div>
@@ -57,7 +61,7 @@ export default {
 .popUp{
     z-index:101;
     width:73%;
-    height:440px;
+    height:509px;
     margin-top:332px;
     border-radius:5px;
     font-size:34px;
@@ -65,7 +69,7 @@ export default {
     overflow: hidden;
 }
 .dataList {
-  padding: 21px 30px 16px;
+  padding: 24px 30px 16px;
 }
 .data {
   display: flex;
@@ -77,6 +81,14 @@ export default {
 .dataName {
   color: #b3b3b3;
 }
+.inputBox{
+  width:198px;
+  color: #000;
+  outline: none;
+  border: none;
+  background: transparent;
+  -webkit-appearance: none;
+}
 .dataResult {
   color: #000;
 }
@@ -84,7 +96,7 @@ export default {
   width: 100%;
   margin-bottom: 1px;
   text-align: center;
-  line-height: 41px;
+  line-height: 40px;
   font-size: 24px;
   color: #7997c0;
   background: #cce1fc;

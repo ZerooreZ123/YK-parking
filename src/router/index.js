@@ -10,10 +10,14 @@ import SubstituteOrder from '@/components/OrderCenter/SubstituteOrder'
 import TemporaryPay from '@/components/temporaryPay'
 import Surrender from '@/components/surrender'
 import CarManagement from '@/components/carManagement'
-
+import NoticeReminding from '@/components/noticeReminding'
 Vue.use(Router)
 export default new Router({
   routes: [
+    {
+      path: '/',
+      redirect: '/home'
+    },
     {
       path: '/home',
       name: 'Home',
@@ -63,6 +67,35 @@ export default new Router({
       path: '/carManagement',
       name: 'CarManagement',
       component: CarManagement
+    },
+    {
+      path: '/noticeReminding',
+      name: 'noticeReminding',
+      component: NoticeReminding
     }
+    // {
+    //   path: '/home',
+    //   children: [
+    //     {
+    //       path: '/',
+    //       component: Home
+    //     },
+    //     {
+    //       path: 'saleplan',
+    //       component: saleplan,
+    //       children: [{
+    //         path: "/",
+    //         component: saleplancontent
+    //       },
+    //       {
+    //         path: "createsaleplan",
+    //         component: createsaleplan
+    //       },
+    //       {
+    //         path: "saleplaninfo",
+    //         component: saleplaninfo
+    //       }
+    //   ]
+    // }
   ]
 })

@@ -3,7 +3,7 @@
       <div class="content">
           <div class="carList">
               <div class="car">苏A888888<span class="color1">黑色</span></div>
-              <div class="buttonBox"><span class="cutOff" @click="deleteCar">删除</span><span class="seeOrder">查看包月订单</span></div>
+              <div class="buttonBox"><span class="cutOff" @click="deleteCar">删除</span><span @click='gotoOrder' class="seeOrder">查看包月订单</span></div>
           </div>
           <div class="carList" v-for="(item, index) in carYardName" :key="index" >
               <div class="car">{{item.name}} <span class="color">{{item.color}}</span></div>
@@ -67,33 +67,29 @@ export default {
     }
   },
   methods: {
+    gotoOrder() {
+      this.$router.push({path: '/monthlyOrders'})
+    },
     deleteCar() {
-      const that = this;
-      that.flag = true;
+      this.flag = true;
     },
     remove() {
-      const that = this;
-      that.flag = false;
+      this.flag = false;
     },
     abolish() {
-      const that = this;
-      that.flag = false
+      this.flag = false
     },
     addCar() {
-      const that = this;
-      that.show = true;
+      this.show = true;
     },
     select(index) {
-      const that = this;
-      that.selectIndex = index;
+      this.selectIndex = index;
     },
     cancel() {
-      const that = this;
-      that.show = false;
+      this.show = false;
     },
     confirm() {
-      const that = this;
-      that.show = false;
+      this.show = false;
     }
   }
 }

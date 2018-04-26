@@ -7,7 +7,7 @@
                   <div class="carNum">{{item.plateNum}}</div>
                   <div class="placeName"><span>{{item.place}}</span><span class="timeslot">{{item.timeslot}}</span></div>
               </div>
-              <div class="renew">续费</div>
+              <div @click="Renewals" class="renew">续费</div>
           </div>
       </div>
       <div class="invalidOrder">
@@ -49,6 +49,11 @@ export default {
           timeslot: '2018.1.12-2018.6.18'
         }
       ]
+    }
+  },
+  methods: {
+    Renewals() {
+      this.$router.push({path: '/monthlyRecharge'})
     }
   }
 };

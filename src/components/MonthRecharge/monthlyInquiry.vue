@@ -15,7 +15,11 @@
   </div>
 </template>
 <script>
+
 import TipMes from '@/components/common/tipMes'
+// import XHR from '@/utils/request'
+// import API from '@/utils/api.js'
+
 export default {
   name: 'MonthlyInquiry',
   components: {
@@ -32,22 +36,22 @@ export default {
       message: '抱歉，未找到该车辆包月信息',
       isDisplay: false,
       selectIndex: 0
-    };
+    }
   },
   methods: {
-    select: function(index) {
-      const that = this;
-      that.selectIndex = index;
+    async select(index) {
+      // const result = await XHR.post(API.getCar)
+      this.selectIndex = index;
     },
     query: function() {
-      const that = this;
-      that.isDisplay = true;
-      setTimeout(function() {
-        that.isDisplay = false;
-      }, 1.5e3)
+      // that.isDisplay = true;
+      // setTimeout(function() {
+      //   that.isDisplay = false;
+      // }, 1.5e3)
+      this.$router.push({path: '/monthlyRecharge'})
     }
   }
-};
+}
 </script>
 <style scoped>
 .wrap {

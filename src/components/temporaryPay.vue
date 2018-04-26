@@ -6,8 +6,8 @@
               <div @click="query" class="inquiry">查询</div>
           </div>
           <div class="forExample">例:苏A8888</div>
-          <div class="promptText">选择车场</div>
-          <div class="carList" v-for="item in carYardName" :key="item.id" >
+          <div class="promptText">已绑定车辆</div>
+          <div class="carList" v-for="(item, index) in carYardName" :key="index" >
               <div class="car">{{item.name}}</div>
               <div @click="payment" class="query">查询</div>
           </div>
@@ -28,16 +28,16 @@ export default {
   data () {
     return {
       carYardName: [
-        { name: '苏A888888', id: 1 },
-        { name: '苏A888888', id: 2 },
-        { name: '苏A888888', id: 3 },
-        { name: '苏A888888', id: 4 }
+        { name: '苏A888888' },
+        { name: '苏A888888' },
+        { name: '苏A888888' },
+        { name: '苏A888888' }
       ],
       dataRuselt: [
-        { name: '车牌', result: '苏A888888', match: 1 },
-        { name: '停车时长', result: '2小时15分', match: 2 },
-        { name: '所在车场', result: '创意中央', match: 3 },
-        { name: '金额', result: '15元', match: 4 }
+        { name: '车牌', result: '苏A888888' },
+        { name: '停车时长', result: '2小时15分' },
+        { name: '所在车场', result: '创意中央' },
+        { name: '金额', result: '15元' }
       ],
       message: '抱歉，未找到该车辆停车信息',
       isShow: false,
@@ -46,23 +46,19 @@ export default {
   },
   methods: {
     query: function() {
-      const that = this;
-      that.isDisplay = true;
-      setTimeout(function() {
-        that.isDisplay = false;
+      this.isDisplay = true;
+      setTimeout(() => {
+        this.isDisplay = false;
       }, 1.5e3)
     },
     payment: function() {
-      const that = this;
-      that.isShow = true;
+      this.isShow = true;
     },
     onCancel (isState) {
-      const that = this;
-      that.isShow = isState;
+      this.isShow = isState;
     },
     onConfire(Num) {
-      const that = this;
-      that.isShow = false;
+      this.isShow = false;
       console.log(Num)
     }
   }
