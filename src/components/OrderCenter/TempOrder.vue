@@ -6,13 +6,13 @@
       </div>
       <div class="columnContent">
         <div class="flexContent center textFont textColor">
-          <span class="carNO">{{item.carNO}}</span>
-          <span class="flexContent priceText">{{item.price}}</span>
-          <span >{{item.timeLength}}</span>
+          <span class="carNO">{{item.licensePlateNumber}}</span>
+          <span class="flexContent priceText">{{item.money}}元</span>
+          <span >{{item.duration}}小时</span>
         </div>
         <div class="flexContent center detailTextFont">
-          <span class="flexContent textColor">{{item.park}}</span>
-          <span class="detailTextColor">{{item.time}}</span>
+          <span class="flexContent textColor">{{item.parkingGarageName}}</span>
+          <span class="detailTextColor">{{item.startTime}} - {{item.endTime}}</span>
         </div>
       </div>
     </div>
@@ -23,28 +23,34 @@
 </template>
 
 <script>
+import XHR from '@/utils/request'
+import API from '@/utils/api.js'
 import "@/assets/css/publicStyle.css";
 export default {
+  mounted() {
+    this.getTemporaryOrderList();
+  },
   name: 'TempOrder',
   data() {
     return {
-      items: [
-        { carNO: '苏A 88888', price: '120元', timeLength: '1小时', park: '创意中心', 'time': '2018.01.02 19:20-22:00' },
-        { carNO: '苏A 88888', price: '120元', timeLength: '1小时', park: '创意中心', 'time': '2018.01.02 19:20-22:00' },
-        { carNO: '苏A 88888', price: '120元', timeLength: '1小时', park: '创意中心', 'time': '2018.01.02 19:20-22:00' },
-        { carNO: '苏A 88888', price: '120元', timeLength: '1小时', park: '创意中心', 'time': '2018.01.02 19:20-22:00' },
-        { carNO: '苏A 88888', price: '120元', timeLength: '1小时', park: '创意中心', 'time': '2018.01.02 19:20-22:00' },
-        { carNO: '苏A 88888', price: '120元', timeLength: '1小时', park: '创意中心', 'time': '2018.01.02 19:20-22:00' },
-        { carNO: '苏A 88888', price: '120元', timeLength: '1小时', park: '创意中心', 'time': '2018.01.02 19:20-22:00' },
-        { carNO: '苏A 88888', price: '120元', timeLength: '1小时', park: '创意中心', 'time': '2018.01.02 19:20-22:00' },
-        { carNO: '苏A 88888', price: '120元', timeLength: '1小时', park: '创意中心', 'time': '2018.01.02 19:20-22:00' },
-        { carNO: '苏A 88888', price: '120元', timeLength: '1小时', park: '创意中心', 'time': '2018.01.02 19:20-22:00' }
-      ]
+      items: []
     }
   },
   methods: {
-    goDetail: function () {
-
+    async getTemporaryOrderList() {
+      const result = await XHR.get(window.admin + API.getTemporaryOrderList + '?userId=1');
+      const dataList = JSON.parse(result).data;
+      dataList.forEach(el => {
+        this.items.push({
+          startTime: el.startTime.slice(0, 16).replace(/-/g, '.'),
+          endTime: String(el.endTime.slice(0, 10)) === String(el.startTime.slice(0, 10)) ? el.endTime.slice(11, 16) : el.endTime.slice(6, 16).replace(/-/g, '.'),
+          money: el.money,
+          duration: parseInt(el.duration / 60),
+          licensePlateNumber: el.licensePlateNumber,
+          parkingGarageName: el.parkingGarageName,
+          id: el.id
+        });
+      });
     }
   }
 }
@@ -67,6 +73,7 @@ export default {
   width: 180px;
 }
 .priceText {
+  margin-left:10px;
   color: #5a9df3;
 }
 </style>

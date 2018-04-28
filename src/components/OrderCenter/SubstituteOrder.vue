@@ -7,12 +7,12 @@
         </div>
         <div class="columnContent">
           <div class="flexContent center textFont textColor">
-            <span class="carNO">{{item.carNO}}</span>
-            <span class="flexContent priceText">{{item.price}}</span>
+            <span class="carNO">{{item.licensePlateNumber}}</span>
+            <span class="flexContent priceText">{{item.money}}元</span>
           </div>
           <div class="flexContent center detailTextFont">
-            <span class="carName textColor">{{item.park}}</span>
-            <span class="flexContent detailTextColor">{{item.time}}</span>
+            <span class="carName textColor">{{item.parkingGarageName}}</span>
+            <span class="flexContent detailTextColor">{{item.creationTime}}</span>
           </div>
         </div>
         <div class="center">
@@ -30,25 +30,19 @@
 <script>
 import "@/assets/css/publicStyle.css";
 import PopUp from '@/components/common/popUp'
+import XHR from '@/utils/request'
+import API from '@/utils/api.js'
 export default {
+  mounted() {
+    this.getReplaceOrderList();
+  },
   name: 'SubstituteOrder',
   components: {
     PopUp
   },
   data() {
     return {
-      items: [
-        { carNO: '苏A 88888', price: '120元', park: '创意中心', 'time': '2018.01.02 19:20' },
-        { carNO: '苏A 88888', price: '120元', park: '创意中心', 'time': '2018.01.02 19:20' },
-        { carNO: '苏A 88888', price: '120元', park: '创意中心', 'time': '2018.01.02 19:20' },
-        { carNO: '苏A 88888', price: '120元', park: '创意中心', 'time': '2018.01.02 19:20' },
-        { carNO: '苏A 88888', price: '120元', park: '创意中心', 'time': '2018.01.02 19:20' },
-        { carNO: '苏A 88888', price: '120元', park: '创意中心', 'time': '2018.01.02 19:20' },
-        { carNO: '苏A 88888', price: '120元', park: '创意中心', 'time': '2018.01.02 19:20' },
-        { carNO: '苏A 88888', price: '120元', park: '创意中心', 'time': '2018.01.02 19:20' },
-        { carNO: '苏A 88888', price: '120元', park: '创意中心', 'time': '2018.01.02 19:20' },
-        { carNO: '苏A 88888', price: '120元', park: '创意中心', 'time': '2018.01.02 19:20' }
-      ],
+      items: [],
       dataRuselt: [
         { name: '车牌', result: '苏A888888', match: 1 },
         { name: '停车时长', result: '2小时15分', match: 2 },
@@ -68,6 +62,19 @@ export default {
     onConfire(Num) {
       this.isShow = false;
       console.log(Num)
+    },
+    async getReplaceOrderList() {
+      const result = await XHR.get(window.admin + API.getReplaceOrderList + '?userId=1');
+      const dataList = JSON.parse(result).data;
+      dataList.forEach(el => {
+        this.items.push({
+          creationTime: el.creationTime.replace(/-/g, '.'),
+          money: el.money,
+          licensePlateNumber: el.licensePlateNumber,
+          parkingGarageName: el.parkingGarageName,
+          id: el.id
+        });
+      });
     }
   }
 }
@@ -90,10 +97,11 @@ export default {
   margin-right:20px;
 }
 .carNO {
-  width: 180px;
+  /* width: 180px; */
 }
 .priceText {
   color: #5a9df3;
+  margin-left:10px;
 }
 .substituteBtn {
   background-color: transparent;

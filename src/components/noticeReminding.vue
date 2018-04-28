@@ -9,25 +9,29 @@
   </div>
 </template>
 <script>
+import XHR from '@/utils/request'
+import API from '@/utils/api.js'
 export default {
+  mounted() {
+    this.getNotificationList();
+  },
   name: "NoticeReminding",
   data() {
     return {
-      news: [
-        {
-          text: "您的包月订单将于XX年XX月XX日到期,如仍需包月业务，请尽快办理",
-          date: "2018.1.13-2018.6.18"
-        },
-        {
-          text: "您的包月订单将于XX年XX月XX日到期,如仍需包月业务，请尽快办理",
-          date: "2018.1.13-2018.6.18"
-        },
-        {
-          text: "您的包月订单将于XX年XX月XX日到期,如仍需包月业务，请尽快办理",
-          date: "2018.1.13-2018.6.18"
-        }
-      ]
+      news: []
     };
+  },
+  methods: {
+    async getNotificationList() {
+      const result = await XHR.get(window.admin + API.getNotificationList + '?userId=1');
+      const dataList = JSON.parse(result).data;
+      dataList.forEach(el => {
+        this.news.push({
+          text: el.content,
+          date: el.creationTime
+        });
+      });
+    }
   }
 };
 </script>

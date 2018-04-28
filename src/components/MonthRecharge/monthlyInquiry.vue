@@ -2,7 +2,8 @@
   <div class="warp">
       <div class="content">
           <div class="inputBox">
-              <input type="text" placeholder="车牌" class="inputText">
+              <input type="text" placeholder="车牌" class="inputText" v-model="inputText">
+              <div class="transparentButton" @click= "selectCar"></div>
           </div>
           <div class="forExample">例:苏A8888</div>
           <div class="promptText">选择车场</div>
@@ -10,45 +11,80 @@
               <div @click="select(index)" :class="selectIndex === index?'selectYard':'carYard'" v-for="(item,index) in carYardName" :key="index">{{item.name}}</div>
           </div>
       </div>
-      <div @click="query" class="button">查询</div>
+      <div @click="getCarCardInfo" class="button">查询</div>
       <tip-mes :msg="message" v-if="isDisplay"></tip-mes>
+      <place-name v-if="isPlace"  @onselect="onSelect($event)" @onclose="onClose($event)" ></place-name>
   </div>
 </template>
 <script>
 
 import TipMes from '@/components/common/tipMes'
-// import XHR from '@/utils/request'
-// import API from '@/utils/api.js'
+import PlaceName from '@/components/common/placeName'
+import XHR from '@/utils/request'
+import API from '@/utils/api.js'
 
 export default {
+  mounted() {
+    this.getParkingLotList();
+  },
   name: 'MonthlyInquiry',
   components: {
-    TipMes
+    TipMes,
+    PlaceName
   },
   data () {
     return {
-      carYardName: [
-        { name: '创意中央' },
-        { name: '创意东八区' },
-        { name: '星火E方' },
-        { name: '西祠街道' }
-      ],
+      carYardName: [],
       message: '抱歉，未找到该车辆包月信息',
       isDisplay: false,
-      selectIndex: 0
+      selectIndex: 0,
+      isPlace: false,
+      inputText: null
     }
   },
   methods: {
-    async select(index) {
-      // const result = await XHR.post(API.getCar)
+    select(index) { // 选择车场
       this.selectIndex = index;
     },
-    query: function() {
-      // that.isDisplay = true;
-      // setTimeout(function() {
-      //   that.isDisplay = false;
-      // }, 1.5e3)
-      this.$router.push({path: '/monthlyRecharge'})
+    selectCar() {
+      this.isPlace = true;
+    },
+    onSelect(color) {
+      this.isPlace = false;
+      this.inputText = color;
+    },
+    onClose(state) {
+      this.isPlace = state;
+    },
+    async getCarCardInfo() { // 固定车查询
+      const result = await XHR.get(window.admin + API.getCarCardInfo + '?licensePlateNumber=' + encodeURI(this.inputText) + '&parkId=' + this.carYardName[this.selectIndex].parkId);
+      // const dataList = JSON.parse(result).data;
+      if (JSON.parse(result).ok) {
+        let dataList = {
+          licensePlateNumber: this.inputText,
+          parkName: this.carYardName[this.selectIndex].name,
+          chargeFrom: JSON.parse(result).data.chargeFrom.slice(0, 10),
+          parkId: this.carYardName[this.selectIndex].parkId,
+          rechargeRule: JSON.parse(result).data.rechargeRule
+        };
+        window.sessionStorage.setItem('dataList', JSON.stringify(dataList));
+        this.$router.push({path: '/monthlyRecharge'})
+      } else {
+        this.isDisplay = true;
+        setTimeout(() => {
+          this.isDisplay = false;
+        }, 1.5e3)
+      }
+    },
+    async getParkingLotList() { // 车场
+      const result = await XHR.get(window.admin + API.getParkingLotList);
+      const dataList = JSON.parse(result).data;
+      dataList.forEach(el => {
+        this.carYardName.push({
+          name: el.parkName,
+          parkId: el.parkId
+        });
+      });
     }
   }
 }
@@ -67,7 +103,7 @@ export default {
   color: #777777;
 }
 .inputText {
-  width: 200px;
+  width: 400px;
   height: 40px;
   font-size: 30px;
   text-indent: 30px;
@@ -77,6 +113,13 @@ export default {
   border: none;
   background: transparent;
   -webkit-appearance: none;
+}
+.transparentButton{
+  position: absolute;
+  top:44px;
+  left:30px;
+  width:60px;
+  height:30px;
 }
 .forExample,
 .promptText {

@@ -17,7 +17,9 @@
           </div>
           <div class="promptText">续费时长</div>
           <div class="carYardList" >
-              <div @click="select(index)" :class="selectIndex === index?'selectYard':'carYard'" v-for="(item,index) in renewalLength" :key='index'>{{item.name}}</div>
+              <div @click="select(index)" :class="selectIndex === index?'selectYard':'carYard'" v-for="(item,index) in renewalLength" :key='index'>
+                {{item.ruleFee/100}}元/{{item.ruleAmount==1?"":item.ruleAmount}}月
+              </div>
           </div>
       </div>
       <div class="bottomBox">
@@ -31,15 +33,14 @@ export default {
   name: "MonthlyRecharge",
   data () {
     return {
-      carNum: '苏A 888888',
-      carYard: '创意广场',
-      expiryTime: '2018年6月18日',
-      renewalLength: [
-        { name: '20元/月' },
-        { name: '60元/三个月' },
-        { name: '120元/6个月' },
-        { name: '240元/年' }
-      ],
+      carNum: JSON.parse(window.sessionStorage.getItem('dataList')).licensePlateNumber,
+      carYard: JSON.parse(window.sessionStorage.getItem('dataList')).parkName,
+      expiryTime: JSON.parse(window.sessionStorage.getItem('dataList')).chargeFrom,
+      renewalLength: JSON.parse(window.sessionStorage.getItem('dataList')).rechargeRule,
+      // { name: '20元/月' },
+      // { name: '60元/三个月' },
+      // { name: '120元/6个月' },
+      // { name: '240元/年' },
       selectIndex: 0
     }
   },

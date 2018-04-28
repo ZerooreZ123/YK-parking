@@ -6,8 +6,8 @@
               <div class="buttonBox"><span class="cutOff" @click="deleteCar">删除</span><span @click='gotoOrder' class="seeOrder">查看包月订单</span></div>
           </div>
           <div class="carList" v-for="(item, index) in carYardName" :key="index" >
-              <div class="car">{{item.name}} <span class="color">{{item.color}}</span></div>
-              <div @click="deleteCar" class="delete">删除</div>
+              <div class="car">{{item.licensePlateNumber}} <span class="color">{{item.color}}</span></div>
+              <div @click="deleteCar(index)" class="delete">删除</div>
           </div>
           <div @click="addCar" class="button">新增车辆</div>
           <div class="mask" v-if="flag">
@@ -23,7 +23,7 @@
                 <div class="maskWrap">
                     <div class="content">
                         <div class="inputBox">
-                            <input type="text" placeholder="车牌" class="inputText">
+                            <input type="text" placeholder="车牌" class="inputText" v-model= "inputValue">
                         </div>
                         <div class="forExample">例:苏A8888</div>
                         <div class="promptText">选择颜色</div>
@@ -41,55 +41,76 @@
   </div>
 </template>
 <script>
+import XHR from '@/utils/request'
+import API from '@/utils/api.js'
 export default {
+  mounted() {
+    this.getCarList();
+  },
   name: 'CarManagement',
   data () {
     return {
-      carYardName: [
-        { name: '苏A888888', color: '黑色' },
-        { name: '苏A888888', color: '黑色' },
-        { name: '苏A888888', color: '黑色' },
-        { name: '苏A888888', color: '黑色' }
-      ],
       carColor: [
-        { color: '黑色' },
-        { color: '白色' },
-        { color: '红色' },
-        { color: '黄色' },
-        { color: '棕色' },
-        { color: '蓝色' },
-        { color: '绿色' },
-        { color: '其他' }
+        { color: '黑色' }, { color: '白色' }, { color: '红色' }, { color: '绿色' }, { color: '蓝色' },
+        { color: '黄色' }, { color: '紫色' }, { color: '棕色' }, { color: '青色' }, { color: '其他' }
       ],
-      flag: false,
-      show: false,
-      selectIndex: 0
+      carYardName: [], // 车辆信息列表
+      flag: false, // 删除提示弹窗
+      show: false, // 新增提示弹窗
+      selectIndex: 0, // 颜色index
+      carId: null, // 车辆Id
+      color: null, // 车辆颜色
+      inputValue: null // 输入框文本
     }
   },
   methods: {
-    gotoOrder() {
+    async getCarList() { // 获取车辆列表
+      const result = await XHR.get(window.admin + API.getVehicleList + '?userId=1');
+      const dataList = JSON.parse(result).data;
+      dataList.forEach(el => {
+        this.carYardName.push({
+          color: el.colour,
+          licensePlateNumber: el.licensePlateNumber,
+          id: el.id
+        });
+      });
+    },
+    gotoOrder() { // 挑转到包月订单
       this.$router.push({path: '/monthlyOrders'})
     },
-    deleteCar() {
+    deleteCar(index) { // 弹出删除提示
+      this.carId = this.carYardName[index].id;
       this.flag = true;
     },
-    remove() {
+    async remove() { // 删除车辆
+      const result = await XHR.post(window.admin + API.deleteVehicle + '?id=' + this.carId);
+      console.log(result)
       this.flag = false;
+      window.history.go(0);
     },
-    abolish() {
+    abolish() { // 取消
       this.flag = false
     },
-    addCar() {
+    addCar() { // 添加车辆
       this.show = true;
     },
-    select(index) {
+    select(index) { // 选择颜色
       this.selectIndex = index;
     },
-    cancel() {
+    cancel() { // 取消新增
       this.show = false;
     },
-    confirm() {
+    async confirm() { // 确认添加
+      this.color = this.carColor[this.selectIndex].color;
+      const result = await XHR.post(window.admin + API.addVehicle, {
+        "colour": this.color,
+        "licensePlateNumber": this.inputValue,
+        "phone": "18701569987",
+        "userId": "1"
+      })
+      console.log(result);
       this.show = false;
+      window.history.go(0);
     }
   }
 }

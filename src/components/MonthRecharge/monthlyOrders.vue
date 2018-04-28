@@ -2,17 +2,17 @@
   <div class="warp">
       <div class="validOrder">
           <div class="single" v-for="item in orderList" :key="item.math">
-              <img  class="photo" v-bind:src="item.photoSrc" alt="">
+              <img  class="photo" :src="require('../../assets/images/icon_order.png')" alt="">
               <div class="information">
-                  <div class="carNum">{{item.plateNum}}</div>
-                  <div class="placeName"><span>{{item.place}}</span><span class="timeslot">{{item.timeslot}}</span></div>
+                  <div class="carNum">{{item.licensePlateNumber}}</div>
+                  <div class="placeName"><span>{{item.parkingGarageName}}</span><span class="timeslot">{{item.startTime}} - {{item.endTime}}</span></div>
               </div>
               <div @click="Renewals" class="renew">续费</div>
           </div>
       </div>
       <div class="invalidOrder">
           <div class="item" v-for="(item,index) in backOrder" :key="index">
-              <img class="photoGray" v-bind:src="item.photoSrc" alt="">
+              <img class="photoGray" :src="require('../../assets/images/iconLight.png')" alt="">
               <div class="information">
                   <div class="carNumGray">{{item.plateNum}}</div>
                   <div class="placeNameGray"><span>{{item.place}}</span><span>{{item.timeslot}}</span></div>
@@ -23,27 +23,18 @@
   </div>
 </template>
 <script>
+import XHR from '@/utils/request'
+import API from '@/utils/api.js'
 export default {
+  mounted() {
+    this.getMonthlyPlansOrderList();
+  },
   name: 'MonthlyOrders',
   data () {
     return {
-      orderList: [
-        {
-          photoSrc: require('../../assets/images/icon_order.png'),
-          plateNum: '苏A888888',
-          place: '创意中央',
-          timeslot: '2018.1.12-2018.6.18'
-        },
-        {
-          photoSrc: require('../../assets/images/icon_order.png'),
-          plateNum: '苏A888888',
-          place: '创意中央',
-          timeslot: '2018.1.12-2018.6.18'
-        }
-      ],
+      orderList: [],
       backOrder: [
         {
-          photoSrc: require('../../assets/images/iconLight.png'),
           plateNum: '苏A888888',
           place: '创意中央',
           timeslot: '2018.1.12-2018.6.18'
@@ -54,6 +45,19 @@ export default {
   methods: {
     Renewals() {
       this.$router.push({path: '/monthlyRecharge'})
+    },
+    async getMonthlyPlansOrderList() {
+      const result = await XHR.get(window.admin + API.getMonthlyPlansOrderList + '?userId=1');
+      const dataList = JSON.parse(result).data;
+      dataList.forEach(el => {
+        this.orderList.push({
+          startTime: el.startTime.slice(0, 10).replace(/-/g, '.'),
+          endTime: el.endTime.slice(0, 10).replace(/-/g, '.'),
+          licensePlateNumber: el.licensePlateNumber,
+          parkingGarageName: el.parkingGarageName,
+          id: el.id
+        });
+      });
     }
   }
 };
