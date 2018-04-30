@@ -1,13 +1,17 @@
 <template>
   <div class="warp">
       <div class="content">
-          <div class="carList">
-              <div class="car">苏A888888<span class="color1">黑色</span></div>
+          <div>
+            <div class="carList" v-for="(item, index) in monthlyCar" :key="index">
+              <div class="car">{{item.licensePlateNumber}}<span class="color1">{{item.color}}</span></div>
               <div class="buttonBox"><span class="cutOff" @click="deleteCar">删除</span><span @click='gotoOrder' class="seeOrder">查看包月订单</span></div>
+            </div>
           </div>
-          <div class="carList" v-for="(item, index) in carYardName" :key="index" >
+          <div>
+            <div class="carList" v-for="(item, index) in carYardName" :key="index" >
               <div class="car">{{item.licensePlateNumber}} <span class="color">{{item.color}}</span></div>
               <div @click="deleteCar(index)" class="delete">删除</div>
+            </div>
           </div>
           <div @click="addCar" class="button">新增车辆</div>
           <div class="mask" v-if="flag">
@@ -55,6 +59,7 @@ export default {
         { color: '黄色' }, { color: '紫色' }, { color: '棕色' }, { color: '青色' }, { color: '其他' }
       ],
       carYardName: [], // 车辆信息列表
+      monthlyCar: [],
       flag: false, // 删除提示弹窗
       show: false, // 新增提示弹窗
       selectIndex: 0, // 颜色index
@@ -68,11 +73,20 @@ export default {
       const result = await XHR.get(window.admin + API.getVehicleList + '?userId=1');
       const dataList = JSON.parse(result).data;
       dataList.forEach(el => {
-        this.carYardName.push({
-          color: el.colour,
-          licensePlateNumber: el.licensePlateNumber,
-          id: el.id
-        });
+        if (el.hasOwnProperty('endTime') === false) {
+          this.carYardName.push({
+            color: el.colour,
+            licensePlateNumber: el.licensePlateNumber,
+            id: el.id
+          });
+        }
+        if (el.hasOwnProperty('endTime') === true) {
+          this.monthlyCar.push({
+            color: el.colour,
+            licensePlateNumber: el.licensePlateNumber,
+            id: el.id
+          });
+        }
       });
     },
     gotoOrder() { // 挑转到包月订单

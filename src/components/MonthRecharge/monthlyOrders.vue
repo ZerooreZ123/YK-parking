@@ -14,8 +14,8 @@
           <div class="item" v-for="(item,index) in backOrder" :key="index">
               <img class="photoGray" :src="require('../../assets/images/iconLight.png')" alt="">
               <div class="information">
-                  <div class="carNumGray">{{item.plateNum}}</div>
-                  <div class="placeNameGray"><span>{{item.place}}</span><span>{{item.timeslot}}</span></div>
+                  <div class="carNumGray">{{item.licensePlateNumber}}</div>
+                  <div class="placeNameGray"><span>{{item.parkingGarageName}}</span><span class="time">{{item.startTime}} - {{item.endTime}}</span></div>
                   <div class="text">该包月套餐已到期,请前往车场管理处重新开通。</div>
               </div>
           </div>
@@ -33,13 +33,7 @@ export default {
   data () {
     return {
       orderList: [],
-      backOrder: [
-        {
-          plateNum: '苏A888888',
-          place: '创意中央',
-          timeslot: '2018.1.12-2018.6.18'
-        }
-      ]
+      backOrder: []
     }
   },
   methods: {
@@ -50,13 +44,24 @@ export default {
       const result = await XHR.get(window.admin + API.getMonthlyPlansOrderList + '?userId=1');
       const dataList = JSON.parse(result).data;
       dataList.forEach(el => {
-        this.orderList.push({
-          startTime: el.startTime.slice(0, 10).replace(/-/g, '.'),
-          endTime: el.endTime.slice(0, 10).replace(/-/g, '.'),
-          licensePlateNumber: el.licensePlateNumber,
-          parkingGarageName: el.parkingGarageName,
-          id: el.id
-        });
+        if (el.identifying === 1) {
+          this.orderList.push({
+            startTime: el.startTime.slice(0, 10).replace(/-/g, '.'),
+            endTime: el.endTime.slice(0, 10).replace(/-/g, '.'),
+            licensePlateNumber: el.licensePlateNumber,
+            parkingGarageName: el.parkingGarageName,
+            id: el.id
+          });
+        }
+        if (el.identifying === 2) {
+          this.backOrder.push({
+            startTime: el.startTime.slice(0, 10).replace(/-/g, '.'),
+            endTime: el.endTime.slice(0, 10).replace(/-/g, '.'),
+            licensePlateNumber: el.licensePlateNumber,
+            parkingGarageName: el.parkingGarageName,
+            id: el.id
+          });
+        }
       });
     }
   }
@@ -132,5 +137,9 @@ export default {
   margin: 26px 0;
   font-size: 26px;
   color: #999;
+}
+.time{
+  display:inline-block;
+  margin-left:20px;
 }
 </style>

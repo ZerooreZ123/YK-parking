@@ -29,27 +29,72 @@
   </div>
 </template>
 <script>
+import XHR from '@/utils/request'
+import API from '@/utils/api.js'
 export default {
+  mounted() {
+    this.getStore()
+  },
   name: "MonthlyRecharge",
   data () {
     return {
-      carNum: JSON.parse(window.sessionStorage.getItem('dataList')).licensePlateNumber,
-      carYard: JSON.parse(window.sessionStorage.getItem('dataList')).parkName,
-      expiryTime: JSON.parse(window.sessionStorage.getItem('dataList')).chargeFrom,
-      renewalLength: JSON.parse(window.sessionStorage.getItem('dataList')).rechargeRule,
-      // { name: '20元/月' },
-      // { name: '60元/三个月' },
-      // { name: '120元/6个月' },
-      // { name: '240元/年' },
-      selectIndex: 0
+      carNum: null,
+      carYard: null,
+      expiryTime: null,
+      renewalLength: [],
+      selectIndex: 0,
+      parkId: null,
+      rechargeRule: null,
+      cardId: null,
+      ruleId: null,
+      time: null
     }
   },
   methods: {
+    getStore() {
+      let store = JSON.parse(window.sessionStorage.getItem('dataList'));
+      this.carNum = store.licensePlateNumber
+      this.carYard = store.parkName;
+      this.expiryTime = store.chargeFrom.slice(0, 10);
+      this.renewalLength = store.rechargeRule;
+      this.time = store.chargeFrom;
+      this.parkId = store.parkId;
+      this.rechargeRule = store.rechargeRule;
+      this.cardId = store.cardId;
+      this.ruleId = store.ruleId;
+    },
     select(index) {
       this.selectIndex = index;
     },
-    confirmPay() {
-      this.$router.push({path: '/monthlyOrders'})
+    async confirmPay() {
+      const result = await XHR.post(window.admin + API.getCarCardFee, {
+        cardId: parseInt(this.cardId),
+        chargeCount: parseInt(this.renewalLength[this.selectIndex].ruleAmount),
+        chargeFrom: this.time,
+        parkId: parseInt(this.parkId),
+        ruleId: parseInt(this.ruleId)
+      });
+      const dataResult = JSON.parse(result);
+      if (parseInt(dataResult.status) === 200) {
+        const data = await XHR.post(window.admin + API.payCarCardFee, {
+          duration: parseInt(this.renewalLength[this.selectIndex].ruleAmount),
+          licensePlateNumber: this.carNum,
+          money: dataResult.data[0].payable,
+          orderNo: dataResult.data[0].orderNo,
+          parkId: this.parkId,
+          parkingGarageName: this.carYard,
+          startTime: this.time,
+          userId: '1'
+        })
+        const dataState = JSON.parse(data)
+        if (parseInt(dataState.status) === 200) {
+          this.$router.push({path: '/monthlyOrders'})
+        } else {
+          alert(dataState.msg)
+        }
+      } else {
+        alert(dataResult.msg)
+      }
     }
   }
 }

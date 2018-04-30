@@ -58,14 +58,16 @@ export default {
     },
     async getCarCardInfo() { // 固定车查询
       const result = await XHR.get(window.admin + API.getCarCardInfo + '?licensePlateNumber=' + encodeURI(this.inputText) + '&parkId=' + this.carYardName[this.selectIndex].parkId);
-      // const dataList = JSON.parse(result).data;
+      const dataResult = JSON.parse(result).data;
       if (JSON.parse(result).ok) {
         let dataList = {
           licensePlateNumber: this.inputText,
           parkName: this.carYardName[this.selectIndex].name,
-          chargeFrom: JSON.parse(result).data.chargeFrom.slice(0, 10),
+          chargeFrom: dataResult.chargeFrom,
           parkId: this.carYardName[this.selectIndex].parkId,
-          rechargeRule: JSON.parse(result).data.rechargeRule
+          rechargeRule: dataResult.rechargeRule,
+          cardId: dataResult.cardId,
+          ruleId: dataResult.ruleId
         };
         window.sessionStorage.setItem('dataList', JSON.stringify(dataList));
         this.$router.push({path: '/monthlyRecharge'})
