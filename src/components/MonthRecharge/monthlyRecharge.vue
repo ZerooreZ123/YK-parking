@@ -128,7 +128,7 @@ export default {
   color: #bbbbbb;
   margin-bottom: 16px;
 }
-.carYard {
+/* .carYard {
   display: inline-block;
   width: 328px;
   margin: 15px 13px;
@@ -149,6 +149,32 @@ export default {
   color: #96c1f9;
   background: url("../../../static/images/btn_selected.png") no-repeat;
   background-size: 330px 90px;
+} */
+.carYard {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 86px;
+  width: 328px;
+  margin: 15px 13px;
+  border: 2px solid #e8e8e8;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 30px;
+  color: #000;
+}
+.selectYard {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 86px;
+  width: 330px;
+  margin: 15px 13px;
+  text-align: center;
+  font-size: 30px;
+  color: #569bf6;
+  background: url("../../../static/images/btn_selected.png") no-repeat;
+  background-size: 330px 86px;
 }
 .bottomBox {
   position: fixed;

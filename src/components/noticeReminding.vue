@@ -50,7 +50,7 @@ export default {
 }
 .time {
   margin: 14px 0;
-  font-size: 18px;
+  font-size: 24px;
   color: #b3b3b3;
 }
 </style>

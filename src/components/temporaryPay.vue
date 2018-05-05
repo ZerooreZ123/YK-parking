@@ -90,8 +90,9 @@ export default {
   color: #777777;
 }
 .inputText {
-  width: 200px;
+  width: 520px;
   height: 40px;
+  padding:0;
   font-size: 30px;
   line-height: 40px;
   color: #000;
@@ -105,10 +106,10 @@ export default {
   width: 116px;
   line-height: 56px;
   font-size: 26px;
-  border: 2px solid #c6defc;
+  border: 2px solid #569bf6;
   border-radius: 4px;
   text-align: center;
-  color: #6ba7f7;
+  color: #569bf6;
 }
 .forExample,
 .promptText {

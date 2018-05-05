@@ -86,7 +86,7 @@ export default {
   text-align: center;
   line-height: 41px;
   font-size: 24px;
-  color: #7997c0;
+  color: #6a8bb6;
   background: #cce1fc;
 }
 .selectButton {

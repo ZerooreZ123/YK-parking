@@ -10,7 +10,9 @@ import SubstituteOrder from '@/components/OrderCenter/SubstituteOrder'
 import TemporaryPay from '@/components/temporaryPay'
 import Surrender from '@/components/surrender'
 import CarManagement from '@/components/carManagement'
-import NoticeReminding from '@/components/noticeReminding'
+
+const NoticeReminding = resolve => require(['@/components/noticeReminding'], resolve)
+
 Vue.use(Router)
 export default new Router({
   routes: [

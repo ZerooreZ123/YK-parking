@@ -4,13 +4,13 @@
           <div>
             <div class="carList" v-for="(item, index) in monthlyCar" :key="index">
               <div class="car">{{item.licensePlateNumber}}<span class="color1">{{item.color}}</span></div>
-              <div class="buttonBox"><span class="cutOff" @click="deleteCar">删除</span><span @click='gotoOrder' class="seeOrder">查看包月订单</span></div>
+              <div class="buttonBox"><span class="cutOff" @click="deleteCar(index, 1)">删除</span><span @click='gotoOrder' class="seeOrder">查看包月订单</span></div>
             </div>
           </div>
           <div>
             <div class="carList" v-for="(item, index) in carYardName" :key="index" >
               <div class="car">{{item.licensePlateNumber}} <span class="color">{{item.color}}</span></div>
-              <div @click="deleteCar(index)" class="delete">删除</div>
+              <div @click="deleteCar(index, 2)" class="delete">删除</div>
             </div>
           </div>
           <div @click="addCar" class="button">新增车辆</div>
@@ -32,10 +32,12 @@
                         <div class="forExample">例:苏A8888</div>
                         <div class="promptText">选择颜色</div>
                         <div class="carColorList" >
-                            <div @click="select(index)" :class="selectIndex === index?'selectColor':'carColor'" v-for="(item,index) in carColor" :key="index">{{item.color}}</div>
+                            <div class="colorList" v-for="(item,index) in carColor" :key="index">
+                               <div @click="select(index)" :class="selectIndex === index?'selectColor':'carColor'">{{item.color}}</div>
+                            </div>
                         </div>
                     </div>
-                    <div class="selectButton">
+                    <div class="select">
                         <div @click="cancel" class="cancel">取消</div>
                         <div @click="confirm" class="confirm">确认</div>
                     </div>
@@ -76,14 +78,14 @@ export default {
         if (el.hasOwnProperty('endTime') === false) {
           this.carYardName.push({
             color: el.colour,
-            licensePlateNumber: el.licensePlateNumber,
+            licensePlateNumber: el.licensePlateNumber.replace(/\s/ig, ''),
             id: el.id
           });
         }
         if (el.hasOwnProperty('endTime') === true) {
           this.monthlyCar.push({
             color: el.colour,
-            licensePlateNumber: el.licensePlateNumber,
+            licensePlateNumber: el.licensePlateNumber.replace(/\s/ig, ''),
             id: el.id
           });
         }
@@ -92,8 +94,12 @@ export default {
     gotoOrder() { // 挑转到包月订单
       this.$router.push({path: '/monthlyOrders'})
     },
-    deleteCar(index) { // 弹出删除提示
-      this.carId = this.carYardName[index].id;
+    deleteCar(index, isMonth) { // 弹出删除提示
+      if (isMonth === 2) {
+        this.carId = this.carYardName[index].id;
+      } else {
+        this.carId = this.monthlyCar[index].id;
+      }
       this.flag = true;
     },
     async remove() { // 删除车辆
@@ -118,7 +124,7 @@ export default {
       this.color = this.carColor[this.selectIndex].color;
       const result = await XHR.post(window.admin + API.addVehicle, {
         "colour": this.color,
-        "licensePlateNumber": this.inputValue,
+        "licensePlateNumber": this.inputValue.replace(/\s/ig, ''),
         "phone": "18701569987",
         "userId": "1"
       })
@@ -209,17 +215,22 @@ export default {
   color: #000;
   background: #fff;
 }
-.selectButton {
+.selectButton, .select{
   display: flex;
   justify-content: space-around;
   width: 100%;
   font-size: 30px;
 }
+.selectButton {
+  height: 78px;
+}
+.select{
+  height: 100px;
+}
 .abolish, .sure {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 78px;
   width: 50%;
   border-top: 2px solid #f7f7f7;
 }
@@ -267,7 +278,7 @@ export default {
   color: #777777;
 }
 .inputText {
-  width: 200px;
+  width: 100%;
   height: 40px;
   font-size: 30px;
   text-indent: 30px;
@@ -293,11 +304,16 @@ export default {
 .carColorList {
   padding: 0 16px 50px;
 }
-.carColor {
+.colorList {
   display: inline-block;
+}
+.carColor {
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  height: 56px;
   width: 143px;
   margin: 15px 15px;
-  padding: 12px 0px;
   border: 2px solid #e8e8e8;
   border-radius: 4px;
   text-align: center;
@@ -305,14 +321,16 @@ export default {
   color: #000;
 }
 .selectColor {
-  display: inline-block;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  height: 56px;
   width: 143px;
   margin: 15px 15px;
-  padding: 12px 0px;
   text-align: center;
   font-size: 30px;
   color: #96c1f9;
   background: url("../../static/images/btn_min.png") no-repeat;
-  background-size: 143px 65px;
+  background-size: 143px 56px;
 }
 </style>

@@ -8,7 +8,9 @@
           <div class="forExample">例:苏A8888</div>
           <div class="promptText">选择车场</div>
           <div class="carYardList" >
-              <div @click="select(index)" :class="selectIndex === index?'selectYard':'carYard'" v-for="(item,index) in carYardName" :key="index">{{item.name}}</div>
+              <div class="carName" v-for="(item,index) in carYardName" :key="index">
+                <div @click="select(index)" :class="selectIndex === index?'selectYard':'carYard'" >{{item.name}}</div>
+              </div>
           </div>
       </div>
       <div @click="getCarCardInfo" class="button">查询</div>
@@ -61,7 +63,7 @@ export default {
       const dataResult = JSON.parse(result).data;
       if (JSON.parse(result).ok) {
         let dataList = {
-          licensePlateNumber: this.inputText,
+          licensePlateNumber: this.inputText.replace(/\s/ig, ''),
           parkName: this.carYardName[this.selectIndex].name,
           chargeFrom: dataResult.chargeFrom,
           parkId: this.carYardName[this.selectIndex].parkId,
@@ -105,8 +107,9 @@ export default {
   color: #777777;
 }
 .inputText {
-  width: 400px;
+  width:100%;
   height: 40px;
+  padding: 0;
   font-size: 30px;
   text-indent: 30px;
   line-height: 40px;
@@ -138,11 +141,16 @@ export default {
 .carYardList {
   padding: 0 16px;
 }
-.carYard {
+.carName {
   display: inline-block;
+}
+.carYard {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 86px;
   width: 328px;
   margin: 15px 13px;
-  padding: 24px 0px;
   border: 2px solid #e8e8e8;
   border-radius: 4px;
   text-align: center;
@@ -150,15 +158,17 @@ export default {
   color: #000;
 }
 .selectYard {
-  display: inline-block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 86px;
   width: 330px;
   margin: 15px 13px;
-  padding: 25px 0px;
   text-align: center;
   font-size: 30px;
-  color: #96c1f9;
+  color: #569bf6;
   background: url("../../../static/images/btn_selected.png") no-repeat;
-  background-size: 330px 90px;
+  background-size: 330px 86px;
 }
 .button {
   position: fixed;

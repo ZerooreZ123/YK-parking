@@ -48,7 +48,7 @@ export default {
           this.orderList.push({
             startTime: el.startTime.slice(0, 10).replace(/-/g, '.'),
             endTime: el.endTime.slice(0, 10).replace(/-/g, '.'),
-            licensePlateNumber: el.licensePlateNumber,
+            licensePlateNumber: el.licensePlateNumber.replace(/\s/ig, ''),
             parkingGarageName: el.parkingGarageName,
             id: el.id
           });
@@ -57,7 +57,7 @@ export default {
           this.backOrder.push({
             startTime: el.startTime.slice(0, 10).replace(/-/g, '.'),
             endTime: el.endTime.slice(0, 10).replace(/-/g, '.'),
-            licensePlateNumber: el.licensePlateNumber,
+            licensePlateNumber: el.licensePlateNumber.replace(/\s/ig, ''),
             parkingGarageName: el.parkingGarageName,
             id: el.id
           });
@@ -92,7 +92,7 @@ export default {
 .carNum {
   font-size: 30px;
   color: #000;
-  margin-bottom: 18px;
+  margin-bottom: 12px;
 }
 .placeName {
   font-size: 26px;
@@ -106,11 +106,11 @@ export default {
 .renew {
   width: 116px;
   line-height: 56px;
-  border: 2px solid #c6defc;
+  border: 2px solid #5c9ef6;
   text-align: center;
   border-radius: 5px;
   font-size: 26px;
-  color: #8ebcf9;
+  color: #5c9ef6;
 }
 .item {
   display: flex;

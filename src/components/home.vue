@@ -59,10 +59,10 @@ export default {
 }
 .item {
   display: inline-block;
-  width: 249px;
+  width: 248px;
   height: 250px;
-  border-right: 1px solid #fbfbfb;
-  border-bottom: 1px solid #fbfbfb;
+  border-right: 2px solid #f3f3f3;
+  border-bottom: 2px solid #f3f3f3;
 }
 .single {
   width: 100%;

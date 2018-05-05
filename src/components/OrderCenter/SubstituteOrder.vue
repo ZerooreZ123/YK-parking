@@ -16,7 +16,7 @@
           </div>
         </div>
         <div class="center">
-          <div class="priceText detailTextFont substituteBtn">再次代缴</div>
+          <div class="substituteBtn">再次代缴</div>
         </div>
       </div>
       <span class="footBtn textFont center" @click="addOrder">
@@ -68,9 +68,9 @@ export default {
       const dataList = JSON.parse(result).data;
       dataList.forEach(el => {
         this.items.push({
-          creationTime: el.creationTime.replace(/-/g, '.'),
+          creationTime: el.creationTime.replace(/-/g, '.').slice(0, 16),
           money: el.money,
-          licensePlateNumber: el.licensePlateNumber,
+          licensePlateNumber: el.licensePlateNumber.replace(/\s/ig, ''),
           parkingGarageName: el.parkingGarageName,
           id: el.id
         });
@@ -104,10 +104,14 @@ export default {
   margin-left:10px;
 }
 .substituteBtn {
-  background-color: transparent;
-  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 156px;
+  height:56px;
   border: 2px solid #5a9df3;
-  border-radius: 5px;
-  margin-left: 30px;
+  border-radius: 4px;
+  font-size: 28px;
+  color: #5a9df3;
 }
 </style>

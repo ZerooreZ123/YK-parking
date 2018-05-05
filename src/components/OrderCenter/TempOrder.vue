@@ -46,7 +46,7 @@ export default {
           endTime: String(el.endTime.slice(0, 10)) === String(el.startTime.slice(0, 10)) ? el.endTime.slice(11, 16) : el.endTime.slice(6, 16).replace(/-/g, '.'),
           money: el.money,
           duration: parseInt(el.duration / 60),
-          licensePlateNumber: el.licensePlateNumber,
+          licensePlateNumber: el.licensePlateNumber.replace(/\s/ig, ''),
           parkingGarageName: el.parkingGarageName,
           id: el.id
         });

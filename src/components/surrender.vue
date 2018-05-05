@@ -63,8 +63,9 @@ export default {
   color: #777777;
 }
 .inputText {
-  width: 200px;
+  width: 100%;
   height: 40px;
+  padding: 0;
   font-size: 30px;
   text-indent: 30px;
   line-height: 40px;
@@ -121,7 +122,8 @@ export default {
   color: #777777;
 }
 .phone {
-  width: 400px;
+  width: 80%;
+  padding: 0;
   font-size: 30px;
   line-height: 30px;
   color: #000;
