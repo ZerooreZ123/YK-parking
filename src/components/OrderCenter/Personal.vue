@@ -1,5 +1,5 @@
 <template>
-  <div class="layout">
+  <div>
     <div :key="index" v-for="(item,index) in list">
       <router-link class="linkTo" :to='item.link'>
         <div class="cell">
@@ -32,6 +32,7 @@ export default {
 <style>
 .cell {
   height: 120px;
+  display:flex;
   align-items: center;
   border-bottom: 2px solid #f3f3f3;
 }

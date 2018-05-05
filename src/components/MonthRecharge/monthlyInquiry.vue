@@ -142,7 +142,7 @@ export default {
   display: inline-block;
   width: 328px;
   margin: 15px 13px;
-  padding: 25px 0px;
+  padding: 24px 0px;
   border: 2px solid #e8e8e8;
   border-radius: 4px;
   text-align: center;

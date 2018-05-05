@@ -71,7 +71,7 @@ export default {
   methods: {
     async getCarList() { // 获取车辆列表
       const result = await XHR.get(window.admin + API.getVehicleList + '?userId=1');
-      const dataList = JSON.parse(result).data;
+      const dataList = JSON.parse(result).data || [];
       dataList.forEach(el => {
         if (el.hasOwnProperty('endTime') === false) {
           this.carYardName.push({

@@ -7,7 +7,7 @@
           <div class="forExample">例:苏A8888</div>
           <div class="phoneBox">
               <input type="text" placeholder="被代缴方手机号" class="phone">
-              <div class="option">选项</div>
+              <div class="option">选填</div>
           </div>
       </div>
        <div class="bottomBox">

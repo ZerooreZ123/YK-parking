@@ -8,7 +8,7 @@
           <div class="forExample">例:苏A8888</div>
           <div class="promptText">已绑定车辆</div>
           <div class="carList" v-for="(item, index) in carYardName" :key="index" >
-              <div class="car">{{item.name}}</div>
+              <div class="car">{{item.licensePlateNumber}}</div>
               <div @click="payment" class="query">查询</div>
           </div>
       </div>
@@ -19,7 +19,12 @@
 <script>
 import MaskBox from '@/components/common/maskBox'
 import TipMes from '@/components/common/tipMes'
+import XHR from '@/utils/request'
+import API from '@/utils/api.js'
 export default {
+  mounted() {
+    this.getCarList();
+  },
   name: 'TemporaryPay',
   components: {
     MaskBox,
@@ -27,12 +32,7 @@ export default {
   },
   data () {
     return {
-      carYardName: [
-        { name: '苏A888888' },
-        { name: '苏A888888' },
-        { name: '苏A888888' },
-        { name: '苏A888888' }
-      ],
+      carYardName: [],
       dataRuselt: [
         { name: '车牌', result: '苏A888888' },
         { name: '停车时长', result: '2小时15分' },
@@ -60,6 +60,16 @@ export default {
     onConfire(Num) {
       this.isShow = false;
       console.log(Num)
+    },
+    async getCarList() { // 获取车辆列表
+      const result = await XHR.get(window.admin + API.getVehicleList + '?userId=1');
+      const dataList = JSON.parse(result).data || [];
+      dataList.forEach(el => {
+        this.carYardName.push({
+          licensePlateNumber: el.licensePlateNumber,
+          id: el.id
+        });
+      });
     }
   }
 }
