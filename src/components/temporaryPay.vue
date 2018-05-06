@@ -2,14 +2,14 @@
   <div class="warp">
       <div class="content">
           <div class="inputBox">
-              <input type="text" placeholder="车牌" class="inputText">
-              <div @click="query" class="inquiry">查询</div>
+              <input type="text" placeholder="车牌" class="inputText" v-model="inputValue">
+              <div @click="query(inputValue)" class="inquiry">查询</div>
           </div>
           <div class="forExample">例:苏A8888</div>
           <div class="promptText">已绑定车辆</div>
           <div class="carList" v-for="(item, index) in carYardName" :key="index" >
               <div class="car">{{item.licensePlateNumber}}</div>
-              <div @click="payment" class="query">查询</div>
+              <div @click="query(item.licensePlateNumber)" class="query">查询</div>
           </div>
       </div>
       <mask-box :data="dataRuselt" v-if="isShow" @oncancel="onCancel($event)" @onconfire="onConfire($event)"></mask-box>
@@ -32,34 +32,68 @@ export default {
   },
   data () {
     return {
+      inputValue: null,
       carYardName: [],
-      dataRuselt: [
-        { name: '车牌', result: '苏A888888' },
-        { name: '停车时长', result: '2小时15分' },
-        { name: '所在车场', result: '创意中央' },
-        { name: '金额', result: '15元' }
-      ],
+      dataRuselt: [],
       message: '抱歉，未找到该车辆停车信息',
       isShow: false,
       isDisplay: false
     }
   },
   methods: {
-    query: function() {
-      this.isDisplay = true;
-      setTimeout(() => {
-        this.isDisplay = false;
-      }, 1.5e3)
-    },
-    payment: function() {
-      this.isShow = true;
-    },
     onCancel (isState) {
       this.isShow = isState;
     },
-    onConfire(Num) {
-      this.isShow = false;
-      console.log(Num)
+    async onConfire(payResult) {
+      const dataArray = [];
+      payResult.forEach(ev => {
+        dataArray.push(ev.result)
+      });
+      const result = await XHR.get(window.admin + API.getParkingPaymentInfo + '?licensePlateNumber=' + encodeURI(dataArray[0]));
+      const dataValue = JSON.parse(result).data[0]
+      if (JSON.parse(result).status === 200) {
+        const valueData = await XHR.post(window.admin + API.temporaryPayParkingFee, {
+          duration: dataValue.elapsedTime,
+          licensePlateNumber: dataArray[0],
+          money: dataValue.payable,
+          orderNo: dataValue.orderNo,
+          parkId: dataValue.parkId,
+          parkingGarageName: dataValue.parkName,
+          startTime: dataValue.entryTime,
+          userId: '1'
+        })
+        if (JSON.parse(valueData).status === 200) {
+          this.$router.push({path: '/personal/temp'})
+        } else {
+          alert(JSON.parse(valueData).msg)
+        }
+      } else {
+        alert(JSON.parse(result).msg)
+      }
+    },
+    removeSpace(str) {
+      return str.replace(/\s/ig, '');
+    },
+    async query(carName) { // 查询
+      if (!carName) {
+        return false
+      }
+      const result = await XHR.get(window.admin + API.getParkingPaymentInfo + '?licensePlateNumber=' + encodeURI(this.removeSpace(carName)));
+      if (JSON.parse(result).status === 200) {
+        const dataResult = JSON.parse(result).data[0];
+        this.dataRuselt = [
+          { name: '车牌', result: this.removeSpace(carName) },
+          { name: '停车时长', result: dataResult.elapsedTime % 60 === 0 ? dataResult.elapsedTime / 60 + '小时' : parseInt(dataResult.elapsedTime / 60) + '小时' + dataResult.elapsedTime % 60 + '分' },
+          { name: '所在车场', result: dataResult.parkName },
+          { name: '金额', result: dataResult.payable / 1000 + '元' }
+        ]
+        this.isShow = true;
+      } else {
+        this.isDisplay = true;
+        setTimeout(() => {
+          this.isDisplay = false;
+        }, 1.5e3)
+      }
     },
     async getCarList() { // 获取车辆列表
       const result = await XHR.get(window.admin + API.getVehicleList + '?userId=1');

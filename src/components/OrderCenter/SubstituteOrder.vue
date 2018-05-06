@@ -16,10 +16,10 @@
           </div>
         </div>
         <div class="center">
-          <div class="substituteBtn">再次代缴</div>
+          <div class="substituteBtn" @click = 'addOrder'>再次代缴</div>
         </div>
       </div>
-      <span class="footBtn textFont center" @click="addOrder">
+      <span class="footBtn textFont center" @click="addSubstituteOrder">
         新增代缴订单
       </span>
     </div>
@@ -53,17 +53,20 @@ export default {
     }
   },
   methods: {
-    addOrder() {
+    addOrder() { // 再次代缴
       this.isShow = true;
     },
-    onCancel (isState) {
+    onCancel (isState) { // 取消
       this.isShow = isState;
     },
-    onConfire(Num) {
+    onConfire(Num) { // 确定
       this.isShow = false;
       console.log(Num)
     },
-    async getReplaceOrderList() {
+    addSubstituteOrder() { // 新增代缴订单
+      this.$router.push({path: '/surrender'})
+    },
+    async getReplaceOrderList() { // 获取代缴订单
       const result = await XHR.get(window.admin + API.getReplaceOrderList + '?userId=1');
       const dataList = JSON.parse(result).data;
       dataList.forEach(el => {

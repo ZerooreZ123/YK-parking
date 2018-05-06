@@ -11,7 +11,7 @@
             <div class="tip">请于缴费成功后的15分钟内离场哦</div>
             <div class="selectButton">
                 <div @click="cancel(isCancel)" class="abolish">取消</div>
-                <div @click="confirmPay(money)" class="sure">确认支付</div>
+                <div @click="confirmPay(data)" class="sure">确认支付</div>
             </div>
         </div>
     </div>
@@ -22,16 +22,15 @@ export default {
   props: ["data"],
   data() {
     return {
-      isCancel: false,
-      money: '15元'
+      isCancel: false
     };
   },
   methods: {
     cancel(state) {
       this.$emit('oncancel', state)
     },
-    confirmPay(payMoney) {
-      this.$emit('onconfire', payMoney)
+    confirmPay(payData) {
+      this.$emit('onconfire', payData)
     }
   }
 

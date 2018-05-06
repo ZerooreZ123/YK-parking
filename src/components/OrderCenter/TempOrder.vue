@@ -16,7 +16,7 @@
         </div>
       </div>
     </div>
-    <span class="footBtn textFont center">
+    <span class="footBtn textFont center" @click = "addTempOreder">
       新增临停订单
     </span>
   </div>
@@ -37,7 +37,10 @@ export default {
     }
   },
   methods: {
-    async getTemporaryOrderList() {
+    addTempOreder() { // 新增临停订单
+      this.$router.push({path: '/temporaryPay'})
+    },
+    async getTemporaryOrderList() { // 获取临停订单
       const result = await XHR.get(window.admin + API.getTemporaryOrderList + '?userId=1');
       const dataList = JSON.parse(result).data;
       dataList.forEach(el => {

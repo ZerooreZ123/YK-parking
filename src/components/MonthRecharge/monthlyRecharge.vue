@@ -128,28 +128,6 @@ export default {
   color: #bbbbbb;
   margin-bottom: 16px;
 }
-/* .carYard {
-  display: inline-block;
-  width: 328px;
-  margin: 15px 13px;
-  padding: 25px 0px;
-  border: 2px solid #e8e8e8;
-  border-radius: 4px;
-  text-align: center;
-  font-size: 30px;
-  color: #000;
-}
-.selectYard {
-  display: inline-block;
-  width: 330px;
-  margin: 15px 13px;
-  padding: 25px 0px;
-  text-align: center;
-  font-size: 30px;
-  color: #96c1f9;
-  background: url("../../../static/images/btn_selected.png") no-repeat;
-  background-size: 330px 90px;
-} */
 .carYard {
   display: flex;
   justify-content: center;
