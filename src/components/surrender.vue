@@ -2,37 +2,41 @@
   <div class="warp">
       <div class="content">
           <div class="inputBox">
-              <input type="text" placeholder="车牌" class="inputText">
+              <input type="text" placeholder="车牌" class="inputText" v-model= "inputValue">
           </div>
           <div class="forExample">例:苏A8888</div>
           <div class="phoneBox">
-              <input type="text" placeholder="被代缴方手机号" class="phone">
+              <input type="text" placeholder="被代缴方手机号" class="phone" v-model = "inputPhone">
               <div class="option">选填</div>
           </div>
       </div>
        <div class="bottomBox">
           <div class="cancel">取消</div>
-          <div @click="payment" class="confirm">查询</div>
+          <div @click="query(inputValue)" class="confirm">查询</div>
       </div>
       <mask-box :data="dataRuselt" v-if="isShow" @oncancel="onCancel($event)" @onconfire="onConfire($event)"></mask-box>
+      <tip-mes :msg="message" v-if="isDisplay"></tip-mes>
   </div>
 </template>
 <script>
 import MaskBox from '@/components/common/maskBox'
+import TipMes from '@/components/common/tipMes'
+import XHR from '@/utils/request'
+import API from '@/utils/api.js'
 export default {
   name: 'Surrender',
   components: {
-    MaskBox
+    MaskBox,
+    TipMes
   },
   data () {
     return {
-      dataRuselt: [
-        { name: '车牌', result: '苏A888888', match: 1 },
-        { name: '停车时长', result: '2小时15分', match: 2 },
-        { name: '所在车场', result: '创意中央', match: 3 },
-        { name: '金额', result: '15元', match: 4 }
-      ],
-      isShow: false
+      dataRuselt: [],
+      isShow: false,
+      inputValue: null,
+      inputPhone: null,
+      message: '抱歉，未找到该车辆停车信息',
+      isDisplay: false
     }
   },
   methods: {
@@ -42,9 +46,55 @@ export default {
     onCancel (isState) {
       this.isShow = isState;
     },
-    onConfire(Num) {
-      this.isShow = false;
-      console.log(Num)
+    async onConfire(payResult) {
+      const dataArray = [];
+      payResult.forEach(ev => {
+        dataArray.push(ev.result)
+      });
+      const result = await XHR.get(window.admin + API.getParkingPaymentInfo + '?licensePlateNumber=' + encodeURI(dataArray[0]));
+      const dataValue = JSON.parse(result).data[0]
+      if (JSON.parse(result).status === 200) {
+        const valueData = await XHR.post(window.admin + API.replacePayParkingFee, {
+          licensePlateNumber: dataArray[0],
+          money: dataValue.payable,
+          duration: dataValue.elapsedTime,
+          orderNo: dataValue.orderNo,
+          parkingGarageName: dataValue.parkName,
+          phone: this.inputPhone,
+          userId: '1'
+        })
+        if (JSON.parse(valueData).status === 200) {
+          this.$router.push({path: '/personal/substitute'})
+        } else {
+          alert(JSON.parse(valueData).msg)
+        }
+      } else {
+        alert(JSON.parse(result).msg)
+      }
+    },
+    removeSpace(str) { // 移除空格
+      return str.replace(/\s/ig, '');
+    },
+    async query(carName) { // 查询
+      if (!carName) {
+        return false
+      }
+      const result = await XHR.get(window.admin + API.getParkingPaymentInfo + '?licensePlateNumber=' + encodeURI(this.removeSpace(carName)));
+      if (JSON.parse(result).status === 200) {
+        const dataResult = JSON.parse(result).data[0];
+        this.dataRuselt = [
+          { name: '车牌', result: this.removeSpace(carName) },
+          { name: '停车时长', result: dataResult.elapsedTime % 60 === 0 ? dataResult.elapsedTime / 60 + '小时' : parseInt(dataResult.elapsedTime / 60) + '小时' + dataResult.elapsedTime % 60 + '分' },
+          { name: '所在车场', result: dataResult.parkName },
+          { name: '金额', result: dataResult.payable / 100 + '元' }
+        ]
+        this.isShow = true;
+      } else {
+        this.isDisplay = true;
+        setTimeout(() => {
+          this.isDisplay = false;
+        }, 1.5e3)
+      }
     }
   }
 }

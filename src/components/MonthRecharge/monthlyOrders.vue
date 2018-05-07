@@ -1,13 +1,13 @@
 <template>
   <div class="warp">
       <div class="validOrder">
-          <div class="single" v-for="item in orderList" :key="item.math">
+          <div class="single" v-for="(item, index) in orderList" :key="index">
               <img  class="photo" :src="require('../../assets/images/icon_order.png')" alt="">
               <div class="information">
                   <div class="carNum">{{item.licensePlateNumber}}</div>
                   <div class="placeName"><span>{{item.parkingGarageName}}</span><span class="timeslot">{{item.startTime}} - {{item.endTime}}</span></div>
               </div>
-              <div @click="Renewals" class="renew">续费</div>
+              <div @click="Renewals(item.licensePlateNumber, item.parkingGarageName, item.parkId)" class="renew">续费</div>
           </div>
       </div>
       <div class="invalidOrder">
@@ -29,6 +29,9 @@ export default {
   mounted() {
     this.getMonthlyPlansOrderList();
   },
+  activated() {
+    this.getMonthlyPlansOrderList();
+  },
   name: 'MonthlyOrders',
   data () {
     return {
@@ -37,32 +40,44 @@ export default {
     }
   },
   methods: {
-    Renewals() {
+    Renewals(carName, carYard, carYardId) { // 固定车查询
+      let dataList = {
+        licensePlateNumber: carName,
+        parkName: carYard,
+        parkId: carYardId
+      };
+      window.sessionStorage.setItem('dataList', JSON.stringify(dataList));
       this.$router.push({path: '/monthlyRecharge'})
     },
-    async getMonthlyPlansOrderList() {
+    async getMonthlyPlansOrderList() { // 获取包月订单列表
+      var tempOrder = [];
+      var overdueOrder = [];
       const result = await XHR.get(window.admin + API.getMonthlyPlansOrderList + '?userId=1');
       const dataList = JSON.parse(result).data;
       dataList.forEach(el => {
         if (el.identifying === 1) {
-          this.orderList.push({
+          tempOrder.push({
             startTime: el.startTime.slice(0, 10).replace(/-/g, '.'),
             endTime: el.endTime.slice(0, 10).replace(/-/g, '.'),
             licensePlateNumber: el.licensePlateNumber.replace(/\s/ig, ''),
             parkingGarageName: el.parkingGarageName,
+            parkId: el.parkId,
             id: el.id
           });
         }
         if (el.identifying === 2) {
-          this.backOrder.push({
+          overdueOrder.push({
             startTime: el.startTime.slice(0, 10).replace(/-/g, '.'),
             endTime: el.endTime.slice(0, 10).replace(/-/g, '.'),
             licensePlateNumber: el.licensePlateNumber.replace(/\s/ig, ''),
             parkingGarageName: el.parkingGarageName,
+            parkId: el.parkId,
             id: el.id
           });
         }
       });
+      this.orderList = tempOrder;
+      this.backOrder = overdueOrder;
     }
   }
 };

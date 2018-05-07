@@ -15,6 +15,9 @@ export default {
   mounted() {
     this.getNotificationList();
   },
+  // activated() {
+  //   this.getNotificationList();
+  // },
   name: "NoticeReminding",
   data() {
     return {

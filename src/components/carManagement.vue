@@ -128,9 +128,12 @@ export default {
         "phone": "18701569987",
         "userId": "1"
       })
-      console.log(result);
-      this.show = false;
-      window.history.go(0);
+      if (JSON.parse(result).status === 200) {
+        this.show = false;
+        window.history.go(0);
+      } else {
+        alert(JSON.parse(result).msg)
+      }
     }
   }
 }

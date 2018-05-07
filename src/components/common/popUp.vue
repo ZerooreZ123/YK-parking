@@ -5,9 +5,9 @@
             <div class="dataList">
                 <div class="data">
                   <div class="dataName">手机号</div>
-                  <input class="inputBox" type="text" placeholder="13478956698">
+                  <input class="inputBox" type="text" placeholder="可选填手机号">
                 </div>
-                <div class="data" v-for="item in data" :key="item.match">
+                <div class="data" v-for="(item, index) in data" :key="index">
                     <div class="dataName">{{item.name}}</div>
                     <div class="dataResult">{{item.result}}</div>
                 </div>
@@ -15,7 +15,7 @@
             <div class="tip">请于缴费成功后的15分钟内离场哦</div>
             <div class="selectButton">
                 <div @click="cancel(isCancel)" class="abolish">取消</div>
-                <div @click="confirmPay(money)" class="sure">确认支付</div>
+                <div @click="confirmPay(data)" class="sure">确认支付</div>
             </div>
         </div>
     </div>
@@ -34,8 +34,8 @@ export default {
     cancel(state) {
       this.$emit('oncancel', state)
     },
-    confirmPay(payMoney) {
-      this.$emit('onconfire', payMoney)
+    confirmPay(payData) {
+      this.$emit('onconfire', payData)
     }
   }
 

@@ -33,7 +33,10 @@ import XHR from '@/utils/request'
 import API from '@/utils/api.js'
 export default {
   mounted() {
-    this.getStore()
+    this.getCarCardInfo()
+  },
+  activated() {
+    this.getCarCardInfo()
   },
   name: "MonthlyRecharge",
   data () {
@@ -51,17 +54,27 @@ export default {
     }
   },
   methods: {
-    getStore() {
+    async getCarCardInfo() { // 固定车查询
       let store = JSON.parse(window.sessionStorage.getItem('dataList'));
-      this.carNum = store.licensePlateNumber
-      this.carYard = store.parkName;
-      this.expiryTime = store.chargeFrom.slice(0, 10);
-      this.renewalLength = store.rechargeRule;
-      this.time = store.chargeFrom;
-      this.parkId = store.parkId;
-      this.rechargeRule = store.rechargeRule;
-      this.cardId = store.cardId;
-      this.ruleId = store.ruleId;
+      const result = await XHR.get(window.admin + API.getCarCardInfo + '?licensePlateNumber=' + encodeURI(store.licensePlateNumber) + '&parkId=' + store.parkId);
+      const dataResult = JSON.parse(result).data;
+      if (JSON.parse(result).ok) {
+        this.carNum = store.licensePlateNumber
+        this.carYard = store.parkName;
+        this.expiryTime = dataResult.chargeFrom.slice(0, 10);
+        this.renewalLength = dataResult.rechargeRule;
+        this.time = dataResult.chargeFrom;
+        this.parkId = store.parkId;
+        this.rechargeRule = dataResult.rechargeRule;
+        this.cardId = dataResult.cardId;
+        this.ruleId = dataResult.ruleId;
+      } else {
+        this.message = "抱歉，未找到该车辆包月信息"
+        this.isDisplay = true;
+        setTimeout(() => {
+          this.isDisplay = false;
+        }, 1.5e3)
+      }
     },
     select(index) {
       this.selectIndex = index;

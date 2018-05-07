@@ -16,7 +16,7 @@
           </div>
         </div>
         <div class="center">
-          <div class="substituteBtn" @click = 'addOrder'>再次代缴</div>
+          <div class="substituteBtn" @click = 'againSurrender(item.licensePlateNumber)'>再次代缴</div>
         </div>
       </div>
       <span class="footBtn textFont center" @click="addSubstituteOrder">
@@ -24,60 +24,105 @@
       </span>
     </div>
     <pop-up :data="dataRuselt" v-if="isShow" @oncancel="onCancel($event)" @onconfire="onConfire($event)"></pop-up>
+    <tip-mes :msg="message" v-if="isDisplay"></tip-mes>
   </div>
 </template>
 
 <script>
 import "@/assets/css/publicStyle.css";
 import PopUp from '@/components/common/popUp'
+import TipMes from '@/components/common/tipMes'
 import XHR from '@/utils/request'
 import API from '@/utils/api.js'
 export default {
   mounted() {
     this.getReplaceOrderList();
   },
+  activated() {
+    this.getReplaceOrderList();
+  },
   name: 'SubstituteOrder',
   components: {
-    PopUp
+    PopUp,
+    TipMes
   },
   data() {
     return {
       items: [],
-      dataRuselt: [
-        { name: '车牌', result: '苏A888888', match: 1 },
-        { name: '停车时长', result: '2小时15分', match: 2 },
-        { name: '所在车场', result: '创意中央', match: 3 },
-        { name: '金额', result: '15元', match: 4 }
-      ],
-      isShow: false
+      dataRuselt: [],
+      isShow: false,
+      isDisplay: false,
+      message: '抱歉，未找到该车辆停车信息'
     }
   },
   methods: {
-    addOrder() { // 再次代缴
-      this.isShow = true;
+    async againSurrender(carName) { // 再次代缴
+      const result = await XHR.get(window.admin + API.getParkingPaymentInfo + '?licensePlateNumber=' + encodeURI(this.removeSpace(carName)));
+      if (JSON.parse(result).status === 200) {
+        const dataResult = JSON.parse(result).data[0];
+        this.dataRuselt = [
+          { name: '车牌', result: this.removeSpace(carName) },
+          { name: '停车时长', result: dataResult.elapsedTime % 60 === 0 ? dataResult.elapsedTime / 60 + '小时' : parseInt(dataResult.elapsedTime / 60) + '小时' + dataResult.elapsedTime % 60 + '分' },
+          { name: '所在车场', result: dataResult.parkName },
+          { name: '金额', result: dataResult.payable / 100 + '元' }
+        ]
+        this.isShow = true;
+      } else {
+        this.isDisplay = true;
+        setTimeout(() => {
+          this.isDisplay = false;
+        }, 1.5e3)
+      }
+    },
+    async onConfire(payResult) {
+      const dataArray = [];
+      payResult.forEach(ev => {
+        dataArray.push(ev.result)
+      });
+      const result = await XHR.get(window.admin + API.getParkingPaymentInfo + '?licensePlateNumber=' + encodeURI(dataArray[0]));
+      const dataValue = JSON.parse(result).data[0]
+      if (JSON.parse(result).status === 200) {
+        const valueData = await XHR.post(window.admin + API.replacePayParkingFee, {
+          licensePlateNumber: dataArray[0],
+          money: dataValue.payable,
+          orderNo: dataValue.orderNo,
+          parkingGarageName: dataValue.parkName,
+          phone: this.inputPhone,
+          userId: '1'
+        })
+        if (JSON.parse(valueData).status === 200) {
+          this.isShow = false;
+          window.history.go(0);
+        } else {
+          alert(JSON.parse(valueData).msg)
+        }
+      } else {
+        alert(JSON.parse(result).msg)
+      }
     },
     onCancel (isState) { // 取消
       this.isShow = isState;
     },
-    onConfire(Num) { // 确定
-      this.isShow = false;
-      console.log(Num)
+    removeSpace(str) { // 移除空格
+      return str.replace(/\s/ig, '');
     },
     addSubstituteOrder() { // 新增代缴订单
       this.$router.push({path: '/surrender'})
     },
     async getReplaceOrderList() { // 获取代缴订单
+      var tempOrder = [];
       const result = await XHR.get(window.admin + API.getReplaceOrderList + '?userId=1');
       const dataList = JSON.parse(result).data;
       dataList.forEach(el => {
-        this.items.push({
+        tempOrder.push({
           creationTime: el.creationTime.replace(/-/g, '.').slice(0, 16),
-          money: el.money,
+          money: el.money / 100,
           licensePlateNumber: el.licensePlateNumber.replace(/\s/ig, ''),
           parkingGarageName: el.parkingGarageName,
           id: el.id
         });
       });
+      this.items = tempOrder
     }
   }
 }
@@ -98,9 +143,6 @@ export default {
 }
 .carName{
   margin-right:20px;
-}
-.carNO {
-  /* width: 180px; */
 }
 .priceText {
   color: #5a9df3;

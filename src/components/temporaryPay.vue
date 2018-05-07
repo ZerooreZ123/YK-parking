@@ -2,23 +2,41 @@
   <div class="warp">
       <div class="content">
           <div class="inputBox">
-              <input type="text" placeholder="车牌" class="inputText" v-model="inputValue">
+              <input type="text" placeholder="车牌" class="inputText" v-model="inputValue" ref="inputFocus">
+              <div class="transparentButton" @click= "selectCar"></div>
               <div @click="query(inputValue)" class="inquiry">查询</div>
           </div>
           <div class="forExample">例:苏A8888</div>
-          <div class="promptText">已绑定车辆</div>
-          <div class="carList" v-for="(item, index) in carYardName" :key="index" >
-              <div class="car">{{item.licensePlateNumber}}</div>
-              <div @click="query(item.licensePlateNumber)" class="query">查询</div>
+          <div class="block">
+            <div class="promptText">
+              <img class="icon" :src="require('@/assets/images/temporaryPay_bind.png')" alt="">
+              <span>已绑定车辆</span>
+            </div>
+            <div class="carList" v-for="(item, index) in carName" :key="index" >
+                <div class="car">{{item.licensePlateNumber}}</div>
+                <div @click="query(item.licensePlateNumber)" class="query">查询</div>
+            </div>
+          </div>
+          <div>
+            <div class="promptText">
+              <img class="icon" :src="require('@/assets/images/temporaryPay_history.png')" alt="">
+              <span>历史临停车辆</span>
+            </div>
+            <div class="carList" v-for="(item, index) in carHistory" :key="index" >
+                <div class="car">{{item.licensePlateNumber}}</div>
+                <div @click="query(item.licensePlateNumber)" class="query">查询</div>
+            </div>
           </div>
       </div>
       <mask-box :data="dataRuselt" v-if="isShow" @oncancel="onCancel($event)" @onconfire="onConfire($event)"></mask-box>
       <tip-mes :msg="message" v-if="isDisplay"></tip-mes>
+      <place-name v-if="isPlace"  @onselect="onSelect($event)" @onclose="onClose($event)" ></place-name>
   </div>
 </template>
 <script>
 import MaskBox from '@/components/common/maskBox'
 import TipMes from '@/components/common/tipMes'
+import PlaceName from '@/components/common/placeName'
 import XHR from '@/utils/request'
 import API from '@/utils/api.js'
 export default {
@@ -28,21 +46,35 @@ export default {
   name: 'TemporaryPay',
   components: {
     MaskBox,
-    TipMes
+    TipMes,
+    PlaceName
   },
   data () {
     return {
       inputValue: null,
-      carYardName: [],
+      carName: [], // 绑定车辆列表
+      carHistory: [], // 历史临停车辆列表
       dataRuselt: [],
       message: '抱歉，未找到该车辆停车信息',
       isShow: false,
-      isDisplay: false
+      isDisplay: false,
+      isPlace: false
     }
   },
   methods: {
     onCancel (isState) {
       this.isShow = isState;
+    },
+    selectCar() { // 弹出车牌选择
+      this.isPlace = true;
+    },
+    onSelect(placeName) {
+      this.$refs.inputFocus.focus();
+      this.isPlace = false;
+      this.inputValue = placeName;
+    },
+    onClose(state) {
+      this.isPlace = state;
     },
     async onConfire(payResult) {
       const dataArray = [];
@@ -63,6 +95,7 @@ export default {
           userId: '1'
         })
         if (JSON.parse(valueData).status === 200) {
+          this.isShow = false;
           this.$router.push({path: '/personal/temp'})
         } else {
           alert(JSON.parse(valueData).msg)
@@ -85,7 +118,7 @@ export default {
           { name: '车牌', result: this.removeSpace(carName) },
           { name: '停车时长', result: dataResult.elapsedTime % 60 === 0 ? dataResult.elapsedTime / 60 + '小时' : parseInt(dataResult.elapsedTime / 60) + '小时' + dataResult.elapsedTime % 60 + '分' },
           { name: '所在车场', result: dataResult.parkName },
-          { name: '金额', result: dataResult.payable / 1000 + '元' }
+          { name: '金额', result: dataResult.payable / 100 + '元' }
         ]
         this.isShow = true;
       } else {
@@ -96,11 +129,18 @@ export default {
       }
     },
     async getCarList() { // 获取车辆列表
-      const result = await XHR.get(window.admin + API.getVehicleList + '?userId=1');
-      const dataList = JSON.parse(result).data || [];
+      const result = await XHR.get(window.admin + API.getVehicleList + '?userId=1' + '&type=1');
+      const dataList = JSON.parse(result).data.vehicleList || [];
+      const dataArray = JSON.parse(result).data.temporaryList || [];
       dataList.forEach(el => {
-        this.carYardName.push({
-          licensePlateNumber: el.licensePlateNumber,
+        this.carName.push({
+          licensePlateNumber: this.removeSpace(el.licensePlateNumber),
+          id: el.id
+        });
+      });
+      dataArray.forEach(el => {
+        this.carHistory.push({
+          licensePlateNumber: this.removeSpace(el.licensePlateNumber),
           id: el.id
         });
       });
@@ -135,6 +175,13 @@ export default {
   background: transparent;
   -webkit-appearance: none;
 }
+.transparentButton{
+  position: absolute;
+  top:0;
+  left:0;
+  width:600px;
+  height:118px;
+}
 .inquiry,
 .query {
   width: 116px;
@@ -145,17 +192,28 @@ export default {
   text-align: center;
   color: #569bf6;
 }
+.block {
+  margin-bottom: 55px;
+}
 .forExample,
 .promptText {
-  text-indent: 30px;
   font-size: 26px;
   color: #bbbbbb;
 }
+.icon{
+  display: inline-block;
+  width: 38px;
+  height: 38px;
+  margin-right:14px;
+}
 .forExample {
+  text-indent: 30px;
   margin: 20px 0 48px;
 }
 .promptText {
-  padding: 20px 0;
+  display: flex;
+  align-items: center;
+  padding: 20px 30px;
   border-bottom: 2px solid #f7f7f7;
 }
 .carList {

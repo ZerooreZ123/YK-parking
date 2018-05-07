@@ -30,6 +30,9 @@ export default {
   mounted() {
     this.getTemporaryOrderList();
   },
+  activated() {
+    this.getTemporaryOrderList();
+  },
   name: 'TempOrder',
   data() {
     return {
@@ -41,19 +44,21 @@ export default {
       this.$router.push({path: '/temporaryPay'})
     },
     async getTemporaryOrderList() { // 获取临停订单
+      var tempArray = [];
       const result = await XHR.get(window.admin + API.getTemporaryOrderList + '?userId=1');
       const dataList = JSON.parse(result).data;
       dataList.forEach(el => {
-        this.items.push({
+        tempArray.push({
           startTime: el.startTime.slice(0, 16).replace(/-/g, '.'),
           endTime: String(el.endTime.slice(0, 10)) === String(el.startTime.slice(0, 10)) ? el.endTime.slice(11, 16) : el.endTime.slice(6, 16).replace(/-/g, '.'),
-          money: el.money,
+          money: el.money / 100,
           duration: parseInt(el.duration / 60),
           licensePlateNumber: el.licensePlateNumber.replace(/\s/ig, ''),
           parkingGarageName: el.parkingGarageName,
           id: el.id
         });
       });
+      this.items = tempArray;
     }
   }
 }

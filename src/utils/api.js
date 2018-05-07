@@ -11,6 +11,7 @@ const API = {
   getCarCardFee: '/api/getCarCardFee', // 固定车充值订单查询
   payCarCardFee: '/api/payCarCardFee', // 固定车充值
   getParkingPaymentInfo: '/api/getParkingPaymentInfo', // 获取停车费账单
-  temporaryPayParkingFee: '/api/temporaryPayParkingFee' // 临停车费账单支付
+  temporaryPayParkingFee: '/api/temporaryPayParkingFee', // 临停车费账单支付
+  replacePayParkingFee: '/api/replacePayParkingFee' // 代缴车费账单支付
 }
 export default API

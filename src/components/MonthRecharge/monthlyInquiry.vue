@@ -2,7 +2,7 @@
   <div class="warp">
       <div class="content">
           <div class="inputBox">
-              <input type="text" placeholder="车牌" class="inputText" v-model="inputText">
+              <input type="text" placeholder="车牌" class="inputText" v-model="inputText" ref="inputFocus">
               <div class="transparentButton" @click= "selectCar"></div>
           </div>
           <div class="forExample">例:苏A8888</div>
@@ -37,7 +37,7 @@ export default {
   data () {
     return {
       carYardName: [],
-      message: '抱歉，未找到该车辆包月信息',
+      message: null,
       isDisplay: false,
       selectIndex: 0,
       isPlace: false,
@@ -45,35 +45,63 @@ export default {
     }
   },
   methods: {
+    // changeInput() {
+    //   if (!this.inputText) {
+    //     this.isPlace = true;
+    //   }
+    // },
     select(index) { // 选择车场
       this.selectIndex = index;
     },
     selectCar() {
       this.isPlace = true;
     },
-    onSelect(color) {
+    onSelect(placeName) {
+      this.$refs.inputFocus.focus();
       this.isPlace = false;
-      this.inputText = color;
+      this.inputText = placeName;
     },
     onClose(state) {
       this.isPlace = state;
     },
+    removeSpace(str) { // 移除空格
+      if (str) {
+        return str.replace(/\s/ig, '');
+      }
+    },
     async getCarCardInfo() { // 固定车查询
-      const result = await XHR.get(window.admin + API.getCarCardInfo + '?licensePlateNumber=' + encodeURI(this.inputText) + '&parkId=' + this.carYardName[this.selectIndex].parkId);
-      const dataResult = JSON.parse(result).data;
+      if (!this.inputText) {
+        this.message = "请输入车牌号"
+        this.isDisplay = true;
+        setTimeout(() => {
+          this.isDisplay = false;
+        }, 1.5e3)
+        return false
+      }
+      // if (this.removeSpace(this.inputText).length < 7) {
+      //   this.message = "请输入正确车牌号"
+      //   this.isDisplay = true;
+      //   setTimeout(() => {
+      //     this.isDisplay = false;
+      //   }, 1.5e3)
+      //   return false
+      // }
+      const result = await XHR.get(window.admin + API.getCarCardInfo + '?licensePlateNumber=' + encodeURI(this.removeSpace(this.inputText)) + '&parkId=' + this.carYardName[this.selectIndex].parkId);
+      // const dataResult = JSON.parse(result).data;
       if (JSON.parse(result).ok) {
         let dataList = {
-          licensePlateNumber: this.inputText.replace(/\s/ig, ''),
+          licensePlateNumber: this.removeSpace(this.inputText),
           parkName: this.carYardName[this.selectIndex].name,
-          chargeFrom: dataResult.chargeFrom,
-          parkId: this.carYardName[this.selectIndex].parkId,
-          rechargeRule: dataResult.rechargeRule,
-          cardId: dataResult.cardId,
-          ruleId: dataResult.ruleId
+          parkId: this.carYardName[this.selectIndex].parkId
+          // chargeFrom: dataResult.chargeFrom,
+          // rechargeRule: dataResult.rechargeRule,
+          // cardId: dataResult.cardId,
+          // ruleId: dataResult.ruleId
         };
         window.sessionStorage.setItem('dataList', JSON.stringify(dataList));
         this.$router.push({path: '/monthlyRecharge'})
       } else {
+        this.message = "抱歉，未找到该车辆包月信息"
         this.isDisplay = true;
         setTimeout(() => {
           this.isDisplay = false;
@@ -121,10 +149,10 @@ export default {
 }
 .transparentButton{
   position: absolute;
-  top:44px;
-  left:30px;
-  width:60px;
-  height:30px;
+  top:0;
+  left:0;
+  width:750px;
+  height:118px;
 }
 .forExample,
 .promptText {
