@@ -25,6 +25,7 @@
     </div>
     <pop-up :data="dataRuselt" v-if="isShow" @oncancel="onCancel($event)" @onconfire="onConfire($event)"></pop-up>
     <tip-mes :msg="message" v-if="isDisplay"></tip-mes>
+    <loading v-if = "isLoading"></loading>
   </div>
 </template>
 
@@ -32,6 +33,7 @@
 import "@/assets/css/publicStyle.css";
 import PopUp from '@/components/common/popUp'
 import TipMes from '@/components/common/tipMes'
+import Loading from '@/components/common/loading'
 import XHR from '@/utils/request'
 import API from '@/utils/api.js'
 export default {
@@ -44,7 +46,8 @@ export default {
   name: 'SubstituteOrder',
   components: {
     PopUp,
-    TipMes
+    TipMes,
+    Loading
   },
   data() {
     return {
@@ -52,11 +55,13 @@ export default {
       dataRuselt: [],
       isShow: false,
       isDisplay: false,
+      isLoading: false,
       message: '抱歉，未找到该车辆停车信息'
     }
   },
   methods: {
     async againSurrender(carName, phone) { // 再次代缴
+      this.isLoading = true;
       const result = await XHR.get(window.admin + API.getParkingPaymentInfo + '?licensePlateNumber=' + encodeURI(this.removeSpace(carName)));
       if (JSON.parse(result).status === 200) {
         const dataResult = JSON.parse(result).data[0];
@@ -67,12 +72,31 @@ export default {
           { name: '所在车场', result: dataResult.parkName },
           { name: '金额', result: dataResult.payable / 100 + '元' }
         ]
+        this.isLoading = false;
         this.isShow = true;
       } else {
+        this.isLoading = false;
         this.isDisplay = true;
         setTimeout(() => {
           this.isDisplay = false;
         }, 1.5e3)
+      }
+    },
+    async replacePayParkingFee(dataValue, carName, userPhone) {
+      const valueData = await XHR.post(window.admin + API.replacePayParkingFee, {
+        duration: dataValue.elapsedTime,
+        licensePlateNumber: carName,
+        money: dataValue.payable,
+        orderNo: dataValue.orderNo,
+        parkingGarageName: dataValue.parkName,
+        phone: userPhone,
+        userId: window.workid
+      })
+      if (JSON.parse(valueData).status === 200) {
+        this.isShow = false;
+        this.getReplaceOrderList();
+      } else {
+        alert(JSON.parse(valueData).msg)
       }
     },
     async onConfire(payResult) {
@@ -82,23 +106,15 @@ export default {
       });
       console.log(dataArray)
       const result = await XHR.get(window.admin + API.getParkingPaymentInfo + '?licensePlateNumber=' + encodeURI(dataArray[1]));
-      const dataValue = JSON.parse(result).data[0]
+      const valueResult = JSON.parse(result).data[0]
       if (JSON.parse(result).status === 200) {
-        const valueData = await XHR.post(window.admin + API.replacePayParkingFee, {
-          duration: dataValue.elapsedTime,
-          licensePlateNumber: dataArray[1],
-          money: dataValue.payable,
-          orderNo: dataValue.orderNo,
-          parkingGarageName: dataValue.parkName,
-          phone: dataArray[0],
-          userId: '1'
+        window.workgo.createPayOrder(valueResult.orderNo, '123456', '停车付款', '付款', 1, 'www.junl.cn', (data) => {
+          if (data["success"]) {
+            this.replacePayParkingFee(valueResult, dataArray[1], dataArray[0])
+          } else {
+            alert(data["errMsg"])
+          }
         })
-        if (JSON.parse(valueData).status === 200) {
-          this.isShow = false;
-          window.history.go(0);
-        } else {
-          alert(JSON.parse(valueData).msg)
-        }
       } else {
         alert(JSON.parse(result).msg)
       }
@@ -114,7 +130,7 @@ export default {
     },
     async getReplaceOrderList() { // 获取代缴订单
       var tempOrder = [];
-      const result = await XHR.get(window.admin + API.getReplaceOrderList + '?userId=1');
+      const result = await XHR.get(window.admin + API.getReplaceOrderList + '?userId=' + window.workid);
       const dataList = JSON.parse(result).data;
       dataList.forEach(el => {
         tempOrder.push({

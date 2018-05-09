@@ -23,14 +23,16 @@
           </div>
       </div>
       <div class="bottomBox">
-          <div class="cancel">取消</div>
+          <div class="cancel" @click="back">取消</div>
           <div @click="confirmPay" class="confirm">确认支付</div>
       </div>
+      <loading v-if = "isLoading"></loading>
   </div>
 </template>
 <script>
 import XHR from '@/utils/request'
 import API from '@/utils/api.js'
+import Loading from '@/components/common/loading'
 export default {
   mounted() {
     this.getCarCardInfo()
@@ -39,6 +41,9 @@ export default {
     this.getCarCardInfo()
   },
   name: "MonthlyRecharge",
+  components: {
+    Loading
+  },
   data () {
     return {
       carNum: null,
@@ -50,11 +55,13 @@ export default {
       rechargeRule: null,
       cardId: null,
       ruleId: null,
-      time: null
+      time: null,
+      isLoading: false
     }
   },
   methods: {
     async getCarCardInfo() { // 固定车查询
+      this.isLoading = true;
       let store = JSON.parse(window.sessionStorage.getItem('dataList'));
       const result = await XHR.get(window.admin + API.getCarCardInfo + '?licensePlateNumber=' + encodeURI(store.licensePlateNumber) + '&parkId=' + store.parkId);
       const dataResult = JSON.parse(result).data;
@@ -68,8 +75,10 @@ export default {
         this.rechargeRule = dataResult.rechargeRule;
         this.cardId = dataResult.cardId;
         this.ruleId = dataResult.ruleId;
+        this.isLoading = false;
       } else {
         this.message = "抱歉，未找到该车辆包月信息"
+        this.isLoading = false;
         this.isDisplay = true;
         setTimeout(() => {
           this.isDisplay = false;
@@ -79,6 +88,27 @@ export default {
     select(index) {
       this.selectIndex = index;
     },
+    back() { // 返回上一页
+      window.history.go(-1);
+    },
+    async payCarCardFee(dataResult) {
+      const data = await XHR.post(window.admin + API.payCarCardFee, {
+        duration: parseInt(this.renewalLength[this.selectIndex].ruleAmount),
+        licensePlateNumber: this.carNum,
+        money: dataResult.payable,
+        orderNo: dataResult.orderNo,
+        parkId: this.parkId,
+        parkingGarageName: this.carYard,
+        startTime: this.time,
+        userId: window.workid
+      })
+      const dataState = JSON.parse(data)
+      if (parseInt(dataState.status) === 200) {
+        this.$router.push({path: '/monthlyOrders'})
+      } else {
+        alert(dataState.msg)
+      }
+    },
     async confirmPay() {
       const result = await XHR.post(window.admin + API.getCarCardFee, {
         cardId: parseInt(this.cardId),
@@ -87,26 +117,17 @@ export default {
         parkId: parseInt(this.parkId),
         ruleId: parseInt(this.ruleId)
       });
-      const dataResult = JSON.parse(result);
-      if (parseInt(dataResult.status) === 200) {
-        const data = await XHR.post(window.admin + API.payCarCardFee, {
-          duration: parseInt(this.renewalLength[this.selectIndex].ruleAmount),
-          licensePlateNumber: this.carNum,
-          money: dataResult.data[0].payable,
-          orderNo: dataResult.data[0].orderNo,
-          parkId: this.parkId,
-          parkingGarageName: this.carYard,
-          startTime: this.time,
-          userId: '1'
+      const valueResult = JSON.parse(result).data[0];
+      if (JSON.parse(result).status === 200) {
+        window.workgo.createPayOrder(valueResult.orderNo, '123456', '停车付款', '付款', 1, 'www.junl.cn', (data) => {
+          if (data["success"]) {
+            this.payCarCardFee(valueResult)
+          } else {
+            alert(data["errMsg"])
+          }
         })
-        const dataState = JSON.parse(data)
-        if (parseInt(dataState.status) === 200) {
-          this.$router.push({path: '/monthlyOrders'})
-        } else {
-          alert(dataState.msg)
-        }
       } else {
-        alert(dataResult.msg)
+        alert(valueResult.msg)
       }
     }
   }

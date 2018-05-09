@@ -56,10 +56,10 @@ export default {
       const tempOrder = [];
       const overdueOrder = [];
       if (window.flag) {
-        var result = await XHR.get(window.admin + API.getMonthlyPlansOrderList + '?userId=1' + '&licensePlateNumber=' + encodeURI(window.tempCarNumber));
+        var result = await XHR.get(window.admin + API.getMonthlyPlansOrderList + '?userId=' + window.workid + '&licensePlateNumber=' + encodeURI(window.tempCarNumber));
         window.flag = false;
       } else {
-        var result = await XHR.get(window.admin + API.getMonthlyPlansOrderList + '?userId=1');
+        var result = await XHR.get(window.admin + API.getMonthlyPlansOrderList + '?userId=' + window.workid);
       }
       const dataList = JSON.parse(result).data;
       dataList.forEach(el => {

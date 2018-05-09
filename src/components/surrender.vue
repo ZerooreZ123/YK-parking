@@ -18,12 +18,14 @@
       <mask-box :data="dataRuselt" v-if="isShow" @oncancel="onCancel($event)" @onconfire="onConfire($event)"></mask-box>
       <tip-mes :msg="message" v-if="isDisplay"></tip-mes>
       <place-name v-if="isPlace"  @onselect="onSelect($event)" @onclose="onClose($event)" ></place-name>
+      <loading v-if = "isLoading"></loading>
   </div>
 </template>
 <script>
 import MaskBox from '@/components/common/maskBox'
 import TipMes from '@/components/common/tipMes'
 import PlaceName from '@/components/common/placeName'
+import Loading from '@/components/common/loading'
 import XHR from '@/utils/request'
 import API from '@/utils/api.js'
 export default {
@@ -31,7 +33,8 @@ export default {
   components: {
     MaskBox,
     TipMes,
-    PlaceName
+    PlaceName,
+    Loading
   },
   data () {
     return {
@@ -40,8 +43,9 @@ export default {
       isPlace: false,
       inputValue: null,
       inputPhone: null,
-      message: '抱歉，未找到该车辆停车信息',
-      isDisplay: false
+      message: null,
+      isDisplay: false,
+      isLoading: false
     }
   },
   methods: {
@@ -65,28 +69,38 @@ export default {
     back() { // 取消
       window.history.go(-1)
     },
+    async replacePayParkingFee(dataValue, carName) {
+      const valueData = await XHR.post(window.admin + API.replacePayParkingFee, {
+        licensePlateNumber: carName,
+        money: dataValue.payable,
+        duration: dataValue.elapsedTime,
+        orderNo: dataValue.orderNo,
+        parkingGarageName: dataValue.parkName,
+        phone: this.inputPhone,
+        userId: window.workid
+      })
+      if (JSON.parse(valueData).status === 200) {
+        this.isShow = false;
+        this.$router.push({path: '/personal/substitute'})
+      } else {
+        alert(JSON.parse(valueData).msg)
+      }
+    },
     async onConfire(payResult) {
       const dataArray = [];
       payResult.forEach(ev => {
         dataArray.push(ev.result)
       });
       const result = await XHR.get(window.admin + API.getParkingPaymentInfo + '?licensePlateNumber=' + encodeURI(dataArray[0]));
-      const dataValue = JSON.parse(result).data[0]
+      const valueResult = JSON.parse(result).data[0]
       if (JSON.parse(result).status === 200) {
-        const valueData = await XHR.post(window.admin + API.replacePayParkingFee, {
-          licensePlateNumber: dataArray[0],
-          money: dataValue.payable,
-          duration: dataValue.elapsedTime,
-          orderNo: dataValue.orderNo,
-          parkingGarageName: dataValue.parkName,
-          phone: this.inputPhone,
-          userId: '1'
+        window.workgo.createPayOrder(valueResult.orderNo, '123456', '停车付款', '付款', 1, 'www.junl.cn', (data) => {
+          if (data["success"]) {
+            this.replacePayParkingFee(valueResult, dataArray[0])
+          } else {
+            alert(data["errMsg"])
+          }
         })
-        if (JSON.parse(valueData).status === 200) {
-          this.$router.push({path: '/personal/substitute'})
-        } else {
-          alert(JSON.parse(valueData).msg)
-        }
       } else {
         alert(JSON.parse(result).msg)
       }
@@ -96,8 +110,14 @@ export default {
     },
     async query(carName) { // 查询
       if (!carName) {
+        this.message = "请输入车牌号"
+        this.isDisplay = true;
+        setTimeout(() => {
+          this.isDisplay = false;
+        }, 1.5e3)
         return false
       }
+      this.isLoading = true;
       const result = await XHR.get(window.admin + API.getParkingPaymentInfo + '?licensePlateNumber=' + encodeURI(this.removeSpace(carName)));
       if (JSON.parse(result).status === 200) {
         const dataResult = JSON.parse(result).data[0];
@@ -107,8 +127,11 @@ export default {
           { name: '所在车场', result: dataResult.parkName },
           { name: '金额', result: dataResult.payable / 100 + '元' }
         ]
+        this.isLoading = false;
         this.isShow = true;
       } else {
+        this.isLoading = false;
+        this.message = '抱歉，未找到该车辆停车信息';
         this.isDisplay = true;
         setTimeout(() => {
           this.isDisplay = false;

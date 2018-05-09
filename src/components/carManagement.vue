@@ -88,7 +88,7 @@ export default {
   },
   methods: {
     async getCarList() { // 获取车辆列表
-      const result = await XHR.get(window.admin + API.getVehicleList + '?userId=1');
+      const result = await XHR.get(window.admin + API.getVehicleList + '?userId=' + window.workid);
       const dataList = JSON.parse(result).data || [];
       const monthCar = [];
       const NoMonthCar = [];
@@ -140,9 +140,13 @@ export default {
     },
     async remove() { // 删除车辆
       const result = await XHR.post(window.admin + API.deleteVehicle + '?id=' + this.carId);
-      console.log(result)
-      this.flag = false;
-      window.history.go(0);
+      const dataResult = JSON.parse(result);
+      if (dataResult.status === 200) {
+        this.flag = false;
+        this.getCarList()
+      } else {
+        alert(dataResult.msg)
+      }
     },
     abolish() { // 取消
       this.flag = false
@@ -167,14 +171,14 @@ export default {
       }
       this.color = this.carColor[this.selectIndex].color;
       const result = await XHR.post(window.admin + API.addVehicle, {
-        "colour": this.color,
-        "licensePlateNumber": this.inputValue.replace(/\s/ig, ''),
-        "phone": "18701569987",
-        "userId": "1"
+        colour: this.color,
+        licensePlateNumber: this.inputValue.replace(/\s/ig, ''),
+        phone: window.workPhone,
+        userId: window.workid
       })
       if (JSON.parse(result).status === 200) {
         this.show = false;
-        window.history.go(0);
+        this.getCarList()
       } else {
         alert(JSON.parse(result).msg)
       }

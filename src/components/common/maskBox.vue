@@ -56,7 +56,7 @@ export default {
 .popUp{
     z-index:101;
     width:73%;
-    height:440px;
+    height:438px;
     margin-top:332px;
     border-radius:5px;
     font-size:34px;

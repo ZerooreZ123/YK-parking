@@ -15,9 +15,6 @@ export default {
   mounted() {
     this.getNotificationList();
   },
-  // activated() {
-  //   this.getNotificationList();
-  // },
   name: "NoticeReminding",
   data() {
     return {
@@ -26,7 +23,7 @@ export default {
   },
   methods: {
     async getNotificationList() {
-      const result = await XHR.get(window.admin + API.getNotificationList + '?userId=1');
+      const result = await XHR.get(window.admin + API.getNotificationList + '?userId=' + window.workid);
       const dataList = JSON.parse(result).data;
       dataList.forEach(el => {
         this.news.push({

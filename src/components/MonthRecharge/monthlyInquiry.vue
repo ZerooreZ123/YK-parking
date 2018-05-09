@@ -16,12 +16,14 @@
       <div @click="getCarCardInfo" class="button">查询</div>
       <tip-mes :msg="message" v-if="isDisplay"></tip-mes>
       <place-name v-if="isPlace"  @onselect="onSelect($event)" @onclose="onClose($event)" ></place-name>
+      <loading v-if = "isLoading"></loading>
   </div>
 </template>
 <script>
 
 import TipMes from '@/components/common/tipMes'
 import PlaceName from '@/components/common/placeName'
+import Loading from '@/components/common/loading'
 import XHR from '@/utils/request'
 import API from '@/utils/api.js'
 
@@ -32,24 +34,21 @@ export default {
   name: 'MonthlyInquiry',
   components: {
     TipMes,
-    PlaceName
+    PlaceName,
+    Loading
   },
   data () {
     return {
       carYardName: [],
       message: null,
       isDisplay: false,
+      isLoading: false,
       selectIndex: 0,
       isPlace: false,
       inputText: null
     }
   },
   methods: {
-    // changeInput() {
-    //   if (!this.inputText) {
-    //     this.isPlace = true;
-    //   }
-    // },
     select(index) { // 选择车场
       this.selectIndex = index;
     },
@@ -78,29 +77,19 @@ export default {
         }, 1.5e3)
         return false
       }
-      // if (this.removeSpace(this.inputText).length < 7) {
-      //   this.message = "请输入正确车牌号"
-      //   this.isDisplay = true;
-      //   setTimeout(() => {
-      //     this.isDisplay = false;
-      //   }, 1.5e3)
-      //   return false
-      // }
+      this.isLoading = true;
       const result = await XHR.get(window.admin + API.getCarCardInfo + '?licensePlateNumber=' + encodeURI(this.removeSpace(this.inputText)) + '&parkId=' + this.carYardName[this.selectIndex].parkId);
-      // const dataResult = JSON.parse(result).data;
       if (JSON.parse(result).ok) {
         let dataList = {
           licensePlateNumber: this.removeSpace(this.inputText),
           parkName: this.carYardName[this.selectIndex].name,
           parkId: this.carYardName[this.selectIndex].parkId
-          // chargeFrom: dataResult.chargeFrom,
-          // rechargeRule: dataResult.rechargeRule,
-          // cardId: dataResult.cardId,
-          // ruleId: dataResult.ruleId
         };
+        this.isLoading = false;
         window.sessionStorage.setItem('dataList', JSON.stringify(dataList));
         this.$router.push({path: '/monthlyRecharge'})
       } else {
+        this.isLoading = false;
         this.message = "抱歉，未找到该车辆包月信息"
         this.isDisplay = true;
         setTimeout(() => {

@@ -45,7 +45,7 @@ export default {
     },
     async getTemporaryOrderList() { // 获取临停订单
       var tempArray = [];
-      const result = await XHR.get(window.admin + API.getTemporaryOrderList + '?userId=1');
+      const result = await XHR.get(window.admin + API.getTemporaryOrderList + '?userId=' + window.workid);
       const dataList = JSON.parse(result).data;
       dataList.forEach(el => {
         tempArray.push({
