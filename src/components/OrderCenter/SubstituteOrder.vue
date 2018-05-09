@@ -16,7 +16,7 @@
           </div>
         </div>
         <div class="center">
-          <div class="substituteBtn" @click = 'againSurrender(item.licensePlateNumber)'>再次代缴</div>
+          <div class="substituteBtn" @click = 'againSurrender(item.licensePlateNumber,item.phone)'>再次代缴</div>
         </div>
       </div>
       <span class="footBtn textFont center" @click="addSubstituteOrder">
@@ -56,11 +56,12 @@ export default {
     }
   },
   methods: {
-    async againSurrender(carName) { // 再次代缴
+    async againSurrender(carName, phone) { // 再次代缴
       const result = await XHR.get(window.admin + API.getParkingPaymentInfo + '?licensePlateNumber=' + encodeURI(this.removeSpace(carName)));
       if (JSON.parse(result).status === 200) {
         const dataResult = JSON.parse(result).data[0];
         this.dataRuselt = [
+          { name: '手机号', result: phone || null },
           { name: '车牌', result: this.removeSpace(carName) },
           { name: '停车时长', result: dataResult.elapsedTime % 60 === 0 ? dataResult.elapsedTime / 60 + '小时' : parseInt(dataResult.elapsedTime / 60) + '小时' + dataResult.elapsedTime % 60 + '分' },
           { name: '所在车场', result: dataResult.parkName },
@@ -79,15 +80,17 @@ export default {
       payResult.forEach(ev => {
         dataArray.push(ev.result)
       });
-      const result = await XHR.get(window.admin + API.getParkingPaymentInfo + '?licensePlateNumber=' + encodeURI(dataArray[0]));
+      console.log(dataArray)
+      const result = await XHR.get(window.admin + API.getParkingPaymentInfo + '?licensePlateNumber=' + encodeURI(dataArray[1]));
       const dataValue = JSON.parse(result).data[0]
       if (JSON.parse(result).status === 200) {
         const valueData = await XHR.post(window.admin + API.replacePayParkingFee, {
-          licensePlateNumber: dataArray[0],
+          duration: dataValue.elapsedTime,
+          licensePlateNumber: dataArray[1],
           money: dataValue.payable,
           orderNo: dataValue.orderNo,
           parkingGarageName: dataValue.parkName,
-          phone: this.inputPhone,
+          phone: dataArray[0],
           userId: '1'
         })
         if (JSON.parse(valueData).status === 200) {
@@ -115,6 +118,7 @@ export default {
       const dataList = JSON.parse(result).data;
       dataList.forEach(el => {
         tempOrder.push({
+          phone: el.phone,
           creationTime: el.creationTime.replace(/-/g, '.').slice(0, 16),
           money: el.money / 100,
           licensePlateNumber: el.licensePlateNumber.replace(/\s/ig, ''),

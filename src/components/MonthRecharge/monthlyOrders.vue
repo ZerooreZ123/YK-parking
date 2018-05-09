@@ -32,6 +32,9 @@ export default {
   activated() {
     this.getMonthlyPlansOrderList();
   },
+  beforeDestroy() {
+    window.tempCarNumber = null;
+  },
   name: 'MonthlyOrders',
   data () {
     return {
@@ -50,9 +53,14 @@ export default {
       this.$router.push({path: '/monthlyRecharge'})
     },
     async getMonthlyPlansOrderList() { // 获取包月订单列表
-      var tempOrder = [];
-      var overdueOrder = [];
-      const result = await XHR.get(window.admin + API.getMonthlyPlansOrderList + '?userId=1');
+      const tempOrder = [];
+      const overdueOrder = [];
+      if (window.flag) {
+        var result = await XHR.get(window.admin + API.getMonthlyPlansOrderList + '?userId=1' + '&licensePlateNumber=' + encodeURI(window.tempCarNumber));
+        window.flag = false;
+      } else {
+        var result = await XHR.get(window.admin + API.getMonthlyPlansOrderList + '?userId=1');
+      }
       const dataList = JSON.parse(result).data;
       dataList.forEach(el => {
         if (el.identifying === 1) {

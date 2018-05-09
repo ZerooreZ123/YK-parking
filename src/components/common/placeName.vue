@@ -1,12 +1,13 @@
 <template>
     <div class="mask">
+        <div @click="closeButton(false)" class="blank"></div>
         <div class="maskWrap">
             <div class="prompt">
               <div class="promptText">选择省简称</div>
               <div @click="closeButton(false)" class="close">关闭</div>
             </div>
             <div class="carColorList" >
-              <div @click="selectColor(item.province)" class="carColor" v-for="(item,index) in provinceList" :key="index">{{item.province}}</div>
+              <div @click="selectProvince(item.province)" class="carColor" v-for="(item,index) in provinceList" :key="index">{{item.province}}</div>
             </div>
         </div>
     </div>
@@ -29,7 +30,7 @@ export default {
     };
   },
   methods: {
-    selectColor(mes) {
+    selectProvince(mes) {
       // this.selectIndex = index;
       this.$emit('onselect', mes)
     },
@@ -40,7 +41,7 @@ export default {
 };
 </script>
 <style scoped>
-.mask {
+.mask,.blank {
   z-index: 100;
   position: fixed;
   left: 0;
@@ -49,9 +50,16 @@ export default {
   bottom: 0;
   display:flex;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.3);
+}
+.mask{
+    z-index:99;
+    background:rgba(0,0,0,0.3)
+}
+.blank{
+    z-index:108;
 }
 .maskWrap {
+  z-index:110;
   position: fixed;
   left: 0;
   bottom: 0;

@@ -5,9 +5,9 @@
             <div class="dataList">
                 <div class="data">
                   <div class="dataName">手机号</div>
-                  <input class="inputBox" type="text" placeholder="可选填手机号">
+                  <input class="inputBox" type="text" placeholder="可输入手机号" v-model="data[0].result">
                 </div>
-                <div class="data" v-for="(item, index) in data" :key="index">
+                <div class="data" v-for="(item, index) in data.slice(1)" :key="index">
                     <div class="dataName">{{item.name}}</div>
                     <div class="dataResult">{{item.result}}</div>
                 </div>
@@ -22,12 +22,12 @@
 </template>
 <script>
 export default {
-  name: "MaskBox",
+  name: "PopUp",
   props: ["data"],
   data() {
     return {
-      isCancel: false,
-      money: '15元'
+      isCancel: false
+      // inputValue: this.data[0].result
     };
   },
   methods: {

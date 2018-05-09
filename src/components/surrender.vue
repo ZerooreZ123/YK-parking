@@ -2,7 +2,8 @@
   <div class="warp">
       <div class="content">
           <div class="inputBox">
-              <input type="text" placeholder="车牌" class="inputText" v-model= "inputValue">
+              <input type="text" placeholder="车牌" class="inputText" v-model= "inputValue" ref="inputFocus">
+              <div class="transparentButton" @click= "selectCar"></div>
           </div>
           <div class="forExample">例:苏A8888</div>
           <div class="phoneBox">
@@ -11,28 +12,32 @@
           </div>
       </div>
        <div class="bottomBox">
-          <div class="cancel">取消</div>
+          <div @click="back" class="cancel" >取消</div>
           <div @click="query(inputValue)" class="confirm">查询</div>
       </div>
       <mask-box :data="dataRuselt" v-if="isShow" @oncancel="onCancel($event)" @onconfire="onConfire($event)"></mask-box>
       <tip-mes :msg="message" v-if="isDisplay"></tip-mes>
+      <place-name v-if="isPlace"  @onselect="onSelect($event)" @onclose="onClose($event)" ></place-name>
   </div>
 </template>
 <script>
 import MaskBox from '@/components/common/maskBox'
 import TipMes from '@/components/common/tipMes'
+import PlaceName from '@/components/common/placeName'
 import XHR from '@/utils/request'
 import API from '@/utils/api.js'
 export default {
   name: 'Surrender',
   components: {
     MaskBox,
-    TipMes
+    TipMes,
+    PlaceName
   },
   data () {
     return {
       dataRuselt: [],
       isShow: false,
+      isPlace: false,
       inputValue: null,
       inputPhone: null,
       message: '抱歉，未找到该车辆停车信息',
@@ -45,6 +50,20 @@ export default {
     },
     onCancel (isState) {
       this.isShow = isState;
+    },
+    selectCar() { // 选择省份
+      this.isPlace = true;
+    },
+    onSelect(placeName) {
+      this.$refs.inputFocus.focus();
+      this.isPlace = false;
+      this.inputValue = placeName;
+    },
+    onClose(state) {
+      this.isPlace = state;
+    },
+    back() { // 取消
+      window.history.go(-1)
     },
     async onConfire(payResult) {
       const dataArray = [];
@@ -124,6 +143,13 @@ export default {
   border: none;
   background: transparent;
   -webkit-appearance: none;
+}
+.transparentButton{
+  position: absolute;
+  top:0;
+  left:0;
+  width:750px;
+  height:118px;
 }
 .forExample {
   text-indent: 30px;
