@@ -1,42 +1,42 @@
 <template>
   <div class="warp">
-      <div class="content">
-          <div class="inputBox">
-              <input type="text" placeholder="车牌" class="inputText" v-model= "inputValue" ref="inputFocus">
-              <div class="transparentButton" @click= "selectCar"></div>
-          </div>
-          <div class="forExample">例:苏A8888</div>
-          <div class="phoneBox">
-              <input type="text" placeholder="被代缴方手机号" class="phone" v-model = "inputPhone">
-              <div class="option">选填</div>
-          </div>
+    <div class="content">
+      <div class="inputBox">
+        <input type="text" placeholder="车牌" class="inputText" v-model="inputValue" ref="inputFocus">
+        <div class="transparentButton" @click="selectCar"></div>
       </div>
-       <div class="bottomBox">
-          <div @click="back" class="cancel" >取消</div>
-          <div @click="query(inputValue)" class="confirm">查询</div>
+      <div class="forExample">例:苏A8888</div>
+      <div class="phoneBox">
+        <input type="text" placeholder="被代缴方手机号" class="phone" v-model="inputPhone">
+        <div class="option">选填</div>
       </div>
-      <mask-box :data="dataRuselt" v-if="isShow" @oncancel="onCancel($event)" @onconfire="onConfire($event)"></mask-box>
-      <tip-mes :msg="message" v-if="isDisplay"></tip-mes>
-      <place-name v-if="isPlace"  @onselect="onSelect($event)" @onclose="onClose($event)" ></place-name>
-      <loading v-if = "isLoading"></loading>
+    </div>
+    <div class="bottomBox">
+      <div @click="back" class="cancel">取消</div>
+      <div @click="query(inputValue)" class="confirm">查询</div>
+    </div>
+    <mask-box :data="dataRuselt" v-if="isShow" @oncancel="onCancel($event)" @onconfire="onConfire($event)"></mask-box>
+    <tip-mes :msg="message" v-if="isDisplay"></tip-mes>
+    <place-name v-if="isPlace" @onselect="onSelect($event)" @onclose="onClose($event)"></place-name>
+    <loading v-if="isLoading"></loading>
   </div>
 </template>
 <script>
-import MaskBox from '@/components/common/maskBox'
-import TipMes from '@/components/common/tipMes'
-import PlaceName from '@/components/common/placeName'
-import Loading from '@/components/common/loading'
-import XHR from '@/utils/request'
-import API from '@/utils/api.js'
+import MaskBox from "@/components/common/maskBox";
+import TipMes from "@/components/common/tipMes";
+import PlaceName from "@/components/common/placeName";
+import Loading from "@/components/common/loading";
+import XHR from "@/utils/request";
+import API from "@/utils/api.js";
 export default {
-  name: 'Surrender',
+  name: "Surrender",
   components: {
     MaskBox,
     TipMes,
     PlaceName,
     Loading
   },
-  data () {
+  data() {
     return {
       dataRuselt: [],
       isShow: false,
@@ -46,16 +46,17 @@ export default {
       message: null,
       isDisplay: false,
       isLoading: false
-    }
+    };
   },
   methods: {
     payment() {
       this.isShow = true;
     },
-    onCancel (isState) {
+    onCancel(isState) {
       this.isShow = isState;
     },
-    selectCar() { // 选择省份
+    selectCar() {
+      // 选择省份
       this.isPlace = true;
     },
     onSelect(placeName) {
@@ -66,8 +67,9 @@ export default {
     onClose(state) {
       this.isPlace = state;
     },
-    back() { // 取消
-      window.history.go(-1)
+    back() {
+      // 取消
+      window.history.go(-1);
     },
     async replacePayParkingFee(dataValue, carName) {
       const valueData = await XHR.post(window.admin + API.replacePayParkingFee, {
@@ -78,68 +80,76 @@ export default {
         parkingGarageName: dataValue.parkName,
         phone: this.inputPhone,
         userId: window.workid
-      })
+      });
       if (JSON.parse(valueData).status === 200) {
         this.isShow = false;
-        this.$router.push({path: '/personal/substitute'})
+        this.$router.push({ path: "/personal/substitute" });
       } else {
-        alert(JSON.parse(valueData).msg)
+        alert(JSON.parse(valueData).msg);
       }
     },
     async onConfire(payResult) {
       const dataArray = [];
       payResult.forEach(ev => {
-        dataArray.push(ev.result)
+        dataArray.push(ev.result);
       });
-      const result = await XHR.get(window.admin + API.getParkingPaymentInfo + '?licensePlateNumber=' + encodeURI(dataArray[0]));
-      const valueResult = JSON.parse(result).data[0]
+      const result = await XHR.get(window.admin + API.getParkingPaymentInfo + "?licensePlateNumber=" + encodeURI(dataArray[0]));
+      const valueResult = JSON.parse(result).data[0];
       if (JSON.parse(result).status === 200) {
-        window.workgo.createPayOrder(valueResult.orderNo, '123456', '停车付款', '付款', 1, 'www.junl.cn', (data) => {
+        window.workgo.createPayOrder(valueResult.orderNo, "123456", "停车付款", "付款", 1, "www.junl.cn", data => {
           if (data["success"]) {
-            this.replacePayParkingFee(valueResult, dataArray[0])
+            this.replacePayParkingFee(valueResult, dataArray[0]);
           } else {
-            alert(data["errMsg"])
+            alert(data["errMsg"]);
           }
-        })
+        });
       } else {
-        alert(JSON.parse(result).msg)
+        alert(JSON.parse(result).msg);
       }
     },
-    removeSpace(str) { // 移除空格
-      return str.replace(/\s/ig, '');
+    removeSpace(str) {
+      // 移除空格
+      return str.replace(/\s/gi, "");
     },
-    async query(carName) { // 查询
+    async query(carName) {
+      // 查询
       if (!carName) {
-        this.message = "请输入车牌号"
+        this.message = "请输入车牌号";
         this.isDisplay = true;
         setTimeout(() => {
           this.isDisplay = false;
-        }, 1.5e3)
-        return false
+        }, 1.5e3);
+        return false;
       }
       this.isLoading = true;
-      const result = await XHR.get(window.admin + API.getParkingPaymentInfo + '?licensePlateNumber=' + encodeURI(this.removeSpace(carName)));
+      const result = await XHR.get(window.admin + API.getParkingPaymentInfo + "?licensePlateNumber=" + encodeURI(this.removeSpace(carName)));
       if (JSON.parse(result).status === 200) {
         const dataResult = JSON.parse(result).data[0];
         this.dataRuselt = [
-          { name: '车牌', result: this.removeSpace(carName) },
-          { name: '停车时长', result: dataResult.elapsedTime % 60 === 0 ? dataResult.elapsedTime / 60 + '小时' : parseInt(dataResult.elapsedTime / 60) + '小时' + dataResult.elapsedTime % 60 + '分' },
-          { name: '所在车场', result: dataResult.parkName },
-          { name: '金额', result: dataResult.payable / 100 + '元' }
-        ]
+          { name: "车牌", result: this.removeSpace(carName) },
+          {
+            name: "停车时长",
+            result:
+              dataResult.elapsedTime % 60 === 0
+                ? dataResult.elapsedTime / 60 + "小时"
+                : parseInt(dataResult.elapsedTime / 60) + "小时" + dataResult.elapsedTime % 60 + "分"
+          },
+          { name: "所在车场", result: dataResult.parkName },
+          { name: "金额", result: dataResult.payable / 100 + "元" }
+        ];
         this.isLoading = false;
         this.isShow = true;
       } else {
         this.isLoading = false;
-        this.message = '抱歉，未找到该车辆停车信息';
+        this.message = "抱歉，未找到该车辆停车信息";
         this.isDisplay = true;
         setTimeout(() => {
           this.isDisplay = false;
-        }, 1.5e3)
+        }, 1.5e3);
       }
     }
   }
-}
+};
 </script>
 <style scoped>
 .wrap {
@@ -167,12 +177,12 @@ export default {
   background: transparent;
   -webkit-appearance: none;
 }
-.transparentButton{
+.transparentButton {
   position: absolute;
-  top:0;
-  left:0;
-  width:750px;
-  height:118px;
+  top: 0;
+  left: 0;
+  width: 750px;
+  height: 118px;
 }
 .forExample {
   text-indent: 30px;

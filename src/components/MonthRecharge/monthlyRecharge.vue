@@ -1,50 +1,50 @@
 <template>
   <div class="wrap">
-      <div class="content">
-          <div class="optionList">
-             <div class="option">
-               <div class="optionName">车牌</div>
-               <div class="optionData">{{carNum}}</div>
-             </div>
-             <div class="option">
-               <div class="optionName">所在车场</div>
-               <div class="optionData">{{carYard}}</div>
-             </div>
-             <div class="option">
-               <div class="optionName">到期时间</div>
-               <div class="optionData">{{expiryTime}}</div>
-             </div>
-          </div>
-          <div class="promptText">续费时长</div>
-          <div class="carYardList" >
-              <div @click="select(index)" :class="selectIndex === index?'selectYard':'carYard'" v-for="(item,index) in renewalLength" :key='index'>
-                {{item.ruleFee/100}}元/{{item.ruleAmount==1?"":item.ruleAmount}}月
-              </div>
-          </div>
+    <div class="content">
+      <div class="optionList">
+        <div class="option">
+          <div class="optionName">车牌</div>
+          <div class="optionData">{{carNum}}</div>
+        </div>
+        <div class="option">
+          <div class="optionName">所在车场</div>
+          <div class="optionData">{{carYard}}</div>
+        </div>
+        <div class="option">
+          <div class="optionName">到期时间</div>
+          <div class="optionData">{{expiryTime}}</div>
+        </div>
       </div>
-      <div class="bottomBox">
-          <div class="cancel" @click="back">取消</div>
-          <div @click="confirmPay" class="confirm">确认支付</div>
+      <div class="promptText">续费时长</div>
+      <div class="carYardList">
+        <div @click="select(index)" :class="selectIndex === index?'selectYard':'carYard'" v-for="(item,index) in renewalLength" :key='index'>
+          {{item.ruleFee/100}}元/{{item.ruleAmount==1?"":item.ruleAmount}}月
+        </div>
       </div>
-      <loading v-if = "isLoading"></loading>
+    </div>
+    <div class="bottomBox">
+      <div class="cancel" @click="back">取消</div>
+      <div @click="confirmPay" class="confirm">确认支付</div>
+    </div>
+    <loading v-if="isLoading"></loading>
   </div>
 </template>
 <script>
-import XHR from '@/utils/request'
-import API from '@/utils/api.js'
-import Loading from '@/components/common/loading'
+import XHR from "@/utils/request";
+import API from "@/utils/api.js";
+import Loading from "@/components/common/loading";
 export default {
   mounted() {
-    this.getCarCardInfo()
+    this.getCarCardInfo();
   },
   activated() {
-    this.getCarCardInfo()
+    this.getCarCardInfo();
   },
   name: "MonthlyRecharge",
   components: {
     Loading
   },
-  data () {
+  data() {
     return {
       carNum: null,
       carYard: null,
@@ -57,16 +57,19 @@ export default {
       ruleId: null,
       time: null,
       isLoading: false
-    }
+    };
   },
   methods: {
-    async getCarCardInfo() { // 固定车查询
+    async getCarCardInfo() {
+      // 固定车查询
       this.isLoading = true;
-      let store = JSON.parse(window.sessionStorage.getItem('dataList'));
-      const result = await XHR.get(window.admin + API.getCarCardInfo + '?licensePlateNumber=' + encodeURI(store.licensePlateNumber) + '&parkId=' + store.parkId);
+      let store = JSON.parse(window.sessionStorage.getItem("dataList"));
+      const result = await XHR.get(
+        window.admin + API.getCarCardInfo + "?licensePlateNumber=" + encodeURI(store.licensePlateNumber) + "&parkId=" + store.parkId
+      );
       const dataResult = JSON.parse(result).data;
       if (JSON.parse(result).ok) {
-        this.carNum = store.licensePlateNumber
+        this.carNum = store.licensePlateNumber;
         this.carYard = store.parkName;
         this.expiryTime = dataResult.chargeFrom.slice(0, 10);
         this.renewalLength = dataResult.rechargeRule;
@@ -77,18 +80,19 @@ export default {
         this.ruleId = dataResult.ruleId;
         this.isLoading = false;
       } else {
-        this.message = "抱歉，未找到该车辆包月信息"
+        this.message = "抱歉，未找到该车辆包月信息";
         this.isLoading = false;
         this.isDisplay = true;
         setTimeout(() => {
           this.isDisplay = false;
-        }, 1.5e3)
+        }, 1.5e3);
       }
     },
     select(index) {
       this.selectIndex = index;
     },
-    back() { // 返回上一页
+    back() {
+      // 返回上一页
       window.history.go(-1);
     },
     async payCarCardFee(dataResult) {
@@ -101,12 +105,12 @@ export default {
         parkingGarageName: this.carYard,
         startTime: this.time,
         userId: window.workid
-      })
-      const dataState = JSON.parse(data)
+      });
+      const dataState = JSON.parse(data);
       if (parseInt(dataState.status) === 200) {
-        this.$router.push({path: '/monthlyOrders'})
+        this.$router.push({ path: "/monthlyOrders" });
       } else {
-        alert(dataState.msg)
+        alert(dataState.msg);
       }
     },
     async confirmPay() {
@@ -119,19 +123,19 @@ export default {
       });
       const valueResult = JSON.parse(result).data[0];
       if (JSON.parse(result).status === 200) {
-        window.workgo.createPayOrder(valueResult.orderNo, '123456', '停车付款', '付款', 1, 'www.junl.cn', (data) => {
+        window.workgo.createPayOrder(valueResult.orderNo, "123456", "停车付款", "付款", 1, "www.junl.cn", data => {
           if (data["success"]) {
-            this.payCarCardFee(valueResult)
+            this.payCarCardFee(valueResult);
           } else {
-            alert(data["errMsg"])
+            alert(data["errMsg"]);
           }
-        })
+        });
       } else {
-        alert(valueResult.msg)
+        alert(valueResult.msg);
       }
     }
   }
-}
+};
 </script>
 <style scoped>
 .wrap {

@@ -1,10 +1,10 @@
-.layout *{
+.layout * {
   display: flex;
   overflow: auto;
 }
 .layout {
   display: flex;
-  flex-direction: column;  
+  flex-direction: column;
 }
 .flexContent {
   flex: 1;
@@ -13,19 +13,19 @@
   flex: 1;
   flex-direction: column;
 }
-.textFont{
+.textFont {
   font-size: 32px;
 }
-.textColor{
+.textColor {
   color: #111111;
 }
-.detailTextFont{
+.detailTextFont {
   font-size: 28px;
 }
-.detailTextColor{
+.detailTextColor {
   color: #999999;
 }
-.center{
+.center {
   justify-content: center;
   align-items: center;
 }
@@ -37,5 +37,4 @@
   bottom: 0px;
   left: 0px;
   right: 0px;
-
 }

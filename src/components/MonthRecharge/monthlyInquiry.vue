@@ -1,43 +1,42 @@
 <template>
   <div class="warp">
-      <div class="content">
-          <div class="inputBox">
-              <input type="text" placeholder="车牌" class="inputText" v-model="inputText" ref="inputFocus">
-              <div class="transparentButton" @click= "selectCar"></div>
-          </div>
-          <div class="forExample">例:苏A8888</div>
-          <div class="promptText">选择车场</div>
-          <div class="carYardList" >
-              <div class="carName" v-for="(item,index) in carYardName" :key="index">
-                <div @click="select(index)" :class="selectIndex === index?'selectYard':'carYard'" >{{item.name}}</div>
-              </div>
-          </div>
+    <div class="content">
+      <div class="inputBox">
+        <input type="text" placeholder="车牌" class="inputText" v-model="inputText" ref="inputFocus">
+        <div class="transparentButton" @click="selectCar"></div>
       </div>
-      <div @click="getCarCardInfo" class="button">查询</div>
-      <tip-mes :msg="message" v-if="isDisplay"></tip-mes>
-      <place-name v-if="isPlace"  @onselect="onSelect($event)" @onclose="onClose($event)" ></place-name>
-      <loading v-if = "isLoading"></loading>
+      <div class="forExample">例:苏A8888</div>
+      <div class="promptText">选择车场</div>
+      <div class="carYardList">
+        <div class="carName" v-for="(item,index) in carYardName" :key="index">
+          <div @click="select(index)" :class="selectIndex === index?'selectYard':'carYard'">{{item.name}}</div>
+        </div>
+      </div>
+    </div>
+    <div @click="getCarCardInfo" class="button">查询</div>
+    <tip-mes :msg="message" v-if="isDisplay"></tip-mes>
+    <place-name v-if="isPlace" @onselect="onSelect($event)" @onclose="onClose($event)"></place-name>
+    <loading v-if="isLoading"></loading>
   </div>
 </template>
 <script>
-
-import TipMes from '@/components/common/tipMes'
-import PlaceName from '@/components/common/placeName'
-import Loading from '@/components/common/loading'
-import XHR from '@/utils/request'
-import API from '@/utils/api.js'
+import TipMes from "@/components/common/tipMes";
+import PlaceName from "@/components/common/placeName";
+import Loading from "@/components/common/loading";
+import XHR from "@/utils/request";
+import API from "@/utils/api.js";
 
 export default {
   mounted() {
     this.getParkingLotList();
   },
-  name: 'MonthlyInquiry',
+  name: "MonthlyInquiry",
   components: {
     TipMes,
     PlaceName,
     Loading
   },
-  data () {
+  data() {
     return {
       carYardName: [],
       message: null,
@@ -46,10 +45,11 @@ export default {
       selectIndex: 0,
       isPlace: false,
       inputText: null
-    }
+    };
   },
   methods: {
-    select(index) { // 选择车场
+    select(index) {
+      // 选择车场
       this.selectIndex = index;
     },
     selectCar() {
@@ -63,22 +63,31 @@ export default {
     onClose(state) {
       this.isPlace = state;
     },
-    removeSpace(str) { // 移除空格
+    removeSpace(str) {
+      // 移除空格
       if (str) {
-        return str.replace(/\s/ig, '');
+        return str.replace(/\s/gi, "");
       }
     },
-    async getCarCardInfo() { // 固定车查询
+    async getCarCardInfo() {
+      // 固定车查询
       if (!this.inputText) {
-        this.message = "请输入车牌号"
+        this.message = "请输入车牌号";
         this.isDisplay = true;
         setTimeout(() => {
           this.isDisplay = false;
-        }, 1.5e3)
-        return false
+        }, 1.5e3);
+        return false;
       }
       this.isLoading = true;
-      const result = await XHR.get(window.admin + API.getCarCardInfo + '?licensePlateNumber=' + encodeURI(this.removeSpace(this.inputText)) + '&parkId=' + this.carYardName[this.selectIndex].parkId);
+      const result = await XHR.get(
+        window.admin +
+          API.getCarCardInfo +
+          "?licensePlateNumber=" +
+          encodeURI(this.removeSpace(this.inputText)) +
+          "&parkId=" +
+          this.carYardName[this.selectIndex].parkId
+      );
       if (JSON.parse(result).ok) {
         let dataList = {
           licensePlateNumber: this.removeSpace(this.inputText),
@@ -86,18 +95,19 @@ export default {
           parkId: this.carYardName[this.selectIndex].parkId
         };
         this.isLoading = false;
-        window.sessionStorage.setItem('dataList', JSON.stringify(dataList));
-        this.$router.push({path: '/monthlyRecharge'})
+        window.sessionStorage.setItem("dataList", JSON.stringify(dataList));
+        this.$router.push({ path: "/monthlyRecharge" });
       } else {
         this.isLoading = false;
-        this.message = "抱歉，未找到该车辆包月信息"
+        this.message = "抱歉，未找到该车辆包月信息";
         this.isDisplay = true;
         setTimeout(() => {
           this.isDisplay = false;
-        }, 1.5e3)
+        }, 1.5e3);
       }
     },
-    async getParkingLotList() { // 车场
+    async getParkingLotList() {
+      // 车场
       const result = await XHR.get(window.admin + API.getParkingLotList);
       const dataList = JSON.parse(result).data;
       dataList.forEach(el => {
@@ -108,7 +118,7 @@ export default {
       });
     }
   }
-}
+};
 </script>
 <style scoped>
 .wrap {
@@ -124,7 +134,7 @@ export default {
   color: #777777;
 }
 .inputText {
-  width:100%;
+  width: 100%;
   height: 40px;
   padding: 0;
   font-size: 30px;
@@ -136,12 +146,12 @@ export default {
   background: transparent;
   -webkit-appearance: none;
 }
-.transparentButton{
+.transparentButton {
   position: absolute;
-  top:0;
-  left:0;
-  width:750px;
-  height:118px;
+  top: 0;
+  left: 0;
+  width: 750px;
+  height: 118px;
 }
 .forExample,
 .promptText {

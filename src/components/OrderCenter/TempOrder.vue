@@ -8,7 +8,7 @@
         <div class="flexContent center textFont textColor">
           <span class="carNO">{{item.licensePlateNumber}}</span>
           <span class="flexContent priceText">{{item.money}}元</span>
-          <span >{{item.duration}}小时</span>
+          <span>{{item.duration}}小时</span>
         </div>
         <div class="flexContent center detailTextFont">
           <span class="flexContent textColor">{{item.parkingGarageName}}</span>
@@ -16,15 +16,15 @@
         </div>
       </div>
     </div>
-    <span class="footBtn textFont center" @click = "addTempOreder">
+    <span class="footBtn textFont center" @click="addTempOreder">
       新增临停订单
     </span>
   </div>
 </template>
 
 <script>
-import XHR from '@/utils/request'
-import API from '@/utils/api.js'
+import XHR from "@/utils/request";
+import API from "@/utils/api.js";
 import "@/assets/css/publicStyle.css";
 export default {
   mounted() {
@@ -33,27 +33,30 @@ export default {
   activated() {
     this.getTemporaryOrderList();
   },
-  name: 'TempOrder',
+  name: "TempOrder",
   data() {
     return {
       items: []
-    }
+    };
   },
   methods: {
-    addTempOreder() { // 新增临停订单
-      this.$router.push({path: '/temporaryPay'})
+    addTempOreder() {
+      // 新增临停订单
+      this.$router.push({ path: "/temporaryPay" });
     },
-    async getTemporaryOrderList() { // 获取临停订单
+    async getTemporaryOrderList() {
+      // 获取临停订单
       var tempArray = [];
-      const result = await XHR.get(window.admin + API.getTemporaryOrderList + '?userId=' + window.workid);
+      const result = await XHR.get(window.admin + API.getTemporaryOrderList + "?userId=" + window.workid);
       const dataList = JSON.parse(result).data;
       dataList.forEach(el => {
         tempArray.push({
-          startTime: el.startTime.slice(0, 16).replace(/-/g, '.'),
-          endTime: String(el.endTime.slice(0, 10)) === String(el.startTime.slice(0, 10)) ? el.endTime.slice(11, 16) : el.endTime.slice(6, 16).replace(/-/g, '.'),
+          startTime: el.startTime.slice(0, 16).replace(/-/g, "."),
+          endTime:
+            String(el.endTime.slice(0, 10)) === String(el.startTime.slice(0, 10)) ? el.endTime.slice(11, 16) : el.endTime.slice(6, 16).replace(/-/g, "."),
           money: el.money / 100,
           duration: parseInt(el.duration / 60),
-          licensePlateNumber: el.licensePlateNumber.replace(/\s/ig, ''),
+          licensePlateNumber: el.licensePlateNumber.replace(/\s/gi, ""),
           parkingGarageName: el.parkingGarageName,
           id: el.id
         });
@@ -61,10 +64,10 @@ export default {
       this.items = tempArray;
     }
   }
-}
+};
 </script>
 <style scoped>
-.layoutBottom{
+.layoutBottom {
   margin-bottom: 100px;
 }
 .cell {
@@ -81,7 +84,7 @@ export default {
   width: 180px;
 }
 .priceText {
-  margin-left:10px;
+  margin-left: 10px;
   color: #5a9df3;
 }
 </style>

@@ -1,61 +1,70 @@
 <template>
   <div class="warp">
-      <div class="content">
-          <div>
-            <div class="carList" v-for="(item, index) in monthlyCar" :key="index">
-              <div class="car"><span class="licensePlateNumber">{{item.licensePlateNumber}}</span><span class="color1">{{item.color}}</span></div>
-              <div class="buttonBox"><span class="cutOff" @click="deleteCar(index, 1)">删除</span><span @click='gotoOrder(index)' class="seeOrder">查看包月订单</span></div>
-            </div>
+    <div class="content">
+      <div>
+        <div class="carList" v-for="(item, index) in monthlyCar" :key="index">
+          <div class="car">
+            <span class="licensePlateNumber">{{item.licensePlateNumber}}</span>
+            <span class="color1">{{item.color}}</span>
           </div>
-          <div>
-            <div class="carList" v-for="(item, index) in carYardName" :key="index" >
-              <div class="car"><span class="licensePlateNumber">{{item.licensePlateNumber}}</span> <span class="color">{{item.color}}</span></div>
-              <div @click="deleteCar(index, 2)" class="delete">删除</div>
-            </div>
+          <div class="buttonBox">
+            <span class="cutOff" @click="deleteCar(index, 1)">删除</span>
+            <span @click='gotoOrder(index)' class="seeOrder">查看包月订单</span>
           </div>
-          <div @click="addCar" class="button">新增车辆</div>
-          <div class="mask" v-if="flag">
-            <div @click="abolish" class="blank"></div>
-            <div class="popUp">
-                <div class="sureTip">确认删除苏A888888?</div>
-                <div class="selectButton">
-                    <div @click="abolish" class="abolish">取消</div>
-                    <div @click="remove" class="sure">确认</div>
-                </div>
-            </div>
-          </div>
-           <div class="mask" v-if="show">
-                <div @click="cancel" class="blank"></div>
-                <div class="maskWrap">
-                    <div class="content">
-                        <div class="inputBox">
-                            <input type="text" placeholder="车牌" class="inputText" v-model= "inputValue" ref="inputFocus">
-                            <div class="transparentButton" @click= "selectCar"></div>
-                        </div>
-                        <div class="forExample">例:苏A8888</div>
-                        <div class="promptText">选择颜色</div>
-                        <div class="carColorList" >
-                            <div class="colorList" v-for="(item,index) in carColor" :key="index">
-                               <div @click="select(index)" :class="selectIndex === index?'selectColor':'carColor'">{{item.color}}</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="select">
-                        <div @click="cancel" class="cancel">取消</div>
-                        <div @click="confirm" class="confirm">确认</div>
-                    </div>
-                </div>
-          </div>
+        </div>
       </div>
-      <tip-mes :msg="message" v-if="isDisplay"></tip-mes>
-      <place-name v-if="isPlace"  @onselect="onSelect($event)" @onclose="onClose($event)" ></place-name>
+      <div>
+        <div class="carList" v-for="(item, index) in carYardName" :key="index">
+          <div class="car">
+            <span class="licensePlateNumber">{{item.licensePlateNumber}}</span>
+            <span class="color">{{item.color}}</span>
+          </div>
+          <div @click="deleteCar(index, 2)" class="delete">删除</div>
+        </div>
+      </div>
+      <div @click="addCar" class="button">新增车辆</div>
+      <div class="mask" v-if="flag">
+        <div @click="abolish" class="blank"></div>
+        <div class="popUp">
+          <div class="sureTip">确认删除苏A888888?</div>
+          <div class="selectButton">
+            <div @click="abolish" class="abolish">取消</div>
+            <div @click="remove" class="sure">确认</div>
+          </div>
+        </div>
+      </div>
+      <div class="mask" v-if="show">
+        <div @click="cancel" class="blank"></div>
+        <div class="maskWrap">
+          <div class="content">
+            <div class="inputBox">
+              <input type="text" placeholder="车牌" class="inputText" v-model="inputValue" ref="inputFocus">
+              <div class="transparentButton" @click="selectCar"></div>
+            </div>
+            <div class="forExample">例:苏A8888</div>
+            <div class="promptText">选择颜色</div>
+            <div class="carColorList">
+              <div class="colorList" v-for="(item,index) in carColor" :key="index">
+                <div @click="select(index)" :class="selectIndex === index?'selectColor':'carColor'">{{item.color}}</div>
+              </div>
+            </div>
+          </div>
+          <div class="select">
+            <div @click="cancel" class="cancel">取消</div>
+            <div @click="confirm" class="confirm">确认</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <tip-mes :msg="message" v-if="isDisplay"></tip-mes>
+    <place-name v-if="isPlace" @onselect="onSelect($event)" @onclose="onClose($event)"></place-name>
   </div>
 </template>
 <script>
-import TipMes from '@/components/common/tipMes'
-import PlaceName from '@/components/common/placeName'
-import XHR from '@/utils/request'
-import API from '@/utils/api.js'
+import TipMes from "@/components/common/tipMes";
+import PlaceName from "@/components/common/placeName";
+import XHR from "@/utils/request";
+import API from "@/utils/api.js";
 export default {
   mounted() {
     this.getCarList();
@@ -67,12 +76,20 @@ export default {
     TipMes,
     PlaceName
   },
-  name: 'CarManagement',
-  data () {
+  name: "CarManagement",
+  data() {
     return {
       carColor: [
-        { color: '黑色' }, { color: '白色' }, { color: '红色' }, { color: '绿色' }, { color: '蓝色' },
-        { color: '黄色' }, { color: '紫色' }, { color: '棕色' }, { color: '青色' }, { color: '其他' }
+        { color: "黑色" },
+        { color: "白色" },
+        { color: "红色" },
+        { color: "绿色" },
+        { color: "蓝色" },
+        { color: "黄色" },
+        { color: "紫色" },
+        { color: "棕色" },
+        { color: "青色" },
+        { color: "其他" }
       ],
       carYardName: [], // 无包月车辆列表
       monthlyCar: [], // 包月车辆列表
@@ -84,26 +101,27 @@ export default {
       carId: null, // 车辆Id
       color: null, // 车辆颜色
       inputValue: null // 输入框文本
-    }
+    };
   },
   methods: {
-    async getCarList() { // 获取车辆列表
-      const result = await XHR.get(window.admin + API.getVehicleList + '?userId=' + window.workid);
+    async getCarList() {
+      // 获取车辆列表
+      const result = await XHR.get(window.admin + API.getVehicleList + "?userId=" + window.workid);
       const dataList = JSON.parse(result).data || [];
       const monthCar = [];
       const NoMonthCar = [];
       dataList.forEach(el => {
-        if (el.hasOwnProperty('endTime') === false) {
+        if (el.hasOwnProperty("endTime") === false) {
           NoMonthCar.push({
             color: el.colour,
-            licensePlateNumber: el.licensePlateNumber.replace(/\s/ig, ''),
+            licensePlateNumber: el.licensePlateNumber.replace(/\s/gi, ""),
             id: el.id
           });
         }
-        if (el.hasOwnProperty('endTime') === true) {
+        if (el.hasOwnProperty("endTime") === true) {
           monthCar.push({
             color: el.colour,
-            licensePlateNumber: el.licensePlateNumber.replace(/\s/ig, ''),
+            licensePlateNumber: el.licensePlateNumber.replace(/\s/gi, ""),
             id: el.id
           });
         }
@@ -111,7 +129,8 @@ export default {
       this.carYardName = NoMonthCar;
       this.monthlyCar = monthCar;
     },
-    selectCar() { // 选择省份
+    selectCar() {
+      // 选择省份
       this.isPlace = true;
     },
     onSelect(placeName) {
@@ -122,15 +141,18 @@ export default {
     onClose(state) {
       this.isPlace = state;
     },
-    back() { // 取消
-      window.history.go(-1)
+    back() {
+      // 取消
+      window.history.go(-1);
     },
-    gotoOrder(i) { // 挑转到包月订单
+    gotoOrder(i) {
+      // 挑转到包月订单
       window.flag = true;
       window.tempCarNumber = this.monthlyCar[i].licensePlateNumber;
-      this.$router.push({path: '/monthlyOrders'})
+      this.$router.push({ path: "/monthlyOrders" });
     },
-    deleteCar(index, isMonth) { // 弹出删除提示
+    deleteCar(index, isMonth) {
+      // 弹出删除提示
       if (isMonth === 2) {
         this.carId = this.carYardName[index].id;
       } else {
@@ -138,53 +160,59 @@ export default {
       }
       this.flag = true;
     },
-    async remove() { // 删除车辆
-      const result = await XHR.post(window.admin + API.deleteVehicle + '?id=' + this.carId);
+    async remove() {
+      // 删除车辆
+      const result = await XHR.post(window.admin + API.deleteVehicle + "?id=" + this.carId);
       const dataResult = JSON.parse(result);
       if (dataResult.status === 200) {
         this.flag = false;
-        this.getCarList()
+        this.getCarList();
       } else {
-        alert(dataResult.msg)
+        alert(dataResult.msg);
       }
     },
-    abolish() { // 取消
-      this.flag = false
+    abolish() {
+      // 取消
+      this.flag = false;
     },
-    addCar() { // 添加车辆
+    addCar() {
+      // 添加车辆
       this.show = true;
     },
-    select(index) { // 选择颜色
+    select(index) {
+      // 选择颜色
       this.selectIndex = index;
     },
-    cancel() { // 取消新增
+    cancel() {
+      // 取消新增
       this.show = false;
     },
-    async confirm() { // 确认添加
+    async confirm() {
+      // 确认添加
       if (!this.inputValue) {
-        this.message = "请输入车牌号"
+        this.message = "请输入车牌号";
         this.isDisplay = true;
         setTimeout(() => {
           this.isDisplay = false;
-        }, 1.5e3)
-        return false
+        }, 1.5e3);
+        return false;
       }
       this.color = this.carColor[this.selectIndex].color;
       const result = await XHR.post(window.admin + API.addVehicle, {
         colour: this.color,
-        licensePlateNumber: this.inputValue.replace(/\s/ig, ''),
+        licensePlateNumber: this.inputValue.replace(/\s/gi, ""),
         phone: window.workPhone,
         userId: window.workid
-      })
+      });
       if (JSON.parse(result).status === 200) {
         this.show = false;
-        this.getCarList()
+        this.getCarList();
       } else {
-        alert(JSON.parse(result).msg)
+        alert(JSON.parse(result).msg);
       }
     }
   }
-}
+};
 </script>
 <style scoped>
 .wrap {
@@ -227,8 +255,8 @@ export default {
   color: #000;
 }
 .licensePlateNumber {
-  display:inline-block;
-  width:168px;
+  display: inline-block;
+  width: 168px;
 }
 .color {
   margin-left: 20px;
@@ -242,27 +270,28 @@ export default {
 .buttonBox {
   display: inherit;
 }
-.mask,.blank {
+.mask,
+.blank {
   position: fixed;
   left: 0;
   right: 0;
   top: 0;
   bottom: 0;
-  display:flex;
+  display: flex;
   justify-content: center;
 }
-.mask{
-    z-index:99;
-    background:rgba(0,0,0,0.3)
+.mask {
+  z-index: 99;
+  background: rgba(0, 0, 0, 0.3);
 }
-.blank{
-    z-index:100;
+.blank {
+  z-index: 100;
 }
 .popUp {
   z-index: 101;
-  width:73%;
-  height:210px;
-  margin-top:326px;
+  width: 73%;
+  height: 210px;
+  margin-top: 326px;
   border-radius: 5px;
   font-size: 34px;
   background: #fff;
@@ -276,7 +305,8 @@ export default {
   color: #000;
   background: #fff;
 }
-.selectButton, .select{
+.selectButton,
+.select {
   display: flex;
   justify-content: space-around;
   width: 100%;
@@ -285,25 +315,29 @@ export default {
 .selectButton {
   height: 78px;
 }
-.select{
+.select {
   height: 100px;
 }
-.abolish, .sure {
+.abolish,
+.sure {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 50%;
   border-top: 2px solid #f7f7f7;
 }
-.abolish,.cancel {
+.abolish,
+.cancel {
   color: #999999;
   background: #fff;
 }
-.sure, .confirm{
+.sure,
+.confirm {
   color: #fff;
   background: #569bf6;
 }
-.cancel, .confirm {
+.cancel,
+.confirm {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -370,7 +404,7 @@ export default {
   display: inline-block;
 }
 .carColor {
-  display:flex;
+  display: flex;
   justify-content: center;
   align-items: center;
   height: 56px;
@@ -383,7 +417,7 @@ export default {
   color: #000;
 }
 .selectColor {
-  display:flex;
+  display: flex;
   justify-content: center;
   align-items: center;
   height: 56px;
@@ -395,11 +429,11 @@ export default {
   background: url("../../static/images/btn_min.png") no-repeat;
   background-size: 143px 56px;
 }
-.transparentButton{
+.transparentButton {
   position: absolute;
-  top:0;
-  left:0;
-  width:750px;
-  height:118px;
+  top: 0;
+  left: 0;
+  width: 750px;
+  height: 118px;
 }
 </style>

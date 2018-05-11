@@ -1,7 +1,7 @@
 <template>
-    <div class="mask">
-        <img class="loadingPhoto" :src="require('@/assets/images/loading.gif')" alt="">
-    </div>
+  <div class="mask">
+    <img class="loadingPhoto" :src="require('@/assets/images/loading.gif')" alt="">
+  </div>
 </template>
 <script>
 export default {
@@ -19,10 +19,10 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgba(0,0,0,0.3)
+  background: rgba(0, 0, 0, 0.3);
 }
 .loadingPhoto {
-  display:inline-block;
+  display: inline-block;
   height: 80px;
   width: 80px;
 }

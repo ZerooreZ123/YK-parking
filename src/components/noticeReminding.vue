@@ -1,16 +1,16 @@
 <template>
   <div class="warp">
-      <div class="noticeList">
-          <div class="notice" v-for="(item,index) in news" :key="index" >
-             <div class="text">{{item.text}}</div>
-             <div class="time">{{item.date}}</div>
-          </div>
+    <div class="noticeList">
+      <div class="notice" v-for="(item,index) in news" :key="index">
+        <div class="text">{{item.text}}</div>
+        <div class="time">{{item.date}}</div>
       </div>
+    </div>
   </div>
 </template>
 <script>
-import XHR from '@/utils/request'
-import API from '@/utils/api.js'
+import XHR from "@/utils/request";
+import API from "@/utils/api.js";
 export default {
   mounted() {
     this.getNotificationList();
@@ -23,7 +23,7 @@ export default {
   },
   methods: {
     async getNotificationList() {
-      const result = await XHR.get(window.admin + API.getNotificationList + '?userId=' + window.workid);
+      const result = await XHR.get(window.admin + API.getNotificationList + "?userId=" + window.workid);
       const dataList = JSON.parse(result).data;
       dataList.forEach(el => {
         this.news.push({

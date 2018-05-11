@@ -1,7 +1,7 @@
 <template>
-    <div class="tipBox">
-        <div class="tip">{{msg}}</div>
-    </div>
+  <div class="tipBox">
+    <div class="tip">{{msg}}</div>
+  </div>
 </template>
 <script>
 export default {

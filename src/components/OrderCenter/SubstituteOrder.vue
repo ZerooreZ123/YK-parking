@@ -16,7 +16,7 @@
           </div>
         </div>
         <div class="center">
-          <div class="substituteBtn" @click = 'againSurrender(item.licensePlateNumber,item.phone)'>再次代缴</div>
+          <div class="substituteBtn" @click='againSurrender(item.licensePlateNumber,item.phone)'>再次代缴</div>
         </div>
       </div>
       <span class="footBtn textFont center" @click="addSubstituteOrder">
@@ -25,17 +25,17 @@
     </div>
     <pop-up :data="dataRuselt" v-if="isShow" @oncancel="onCancel($event)" @onconfire="onConfire($event)"></pop-up>
     <tip-mes :msg="message" v-if="isDisplay"></tip-mes>
-    <loading v-if = "isLoading"></loading>
+    <loading v-if="isLoading"></loading>
   </div>
 </template>
 
 <script>
 import "@/assets/css/publicStyle.css";
-import PopUp from '@/components/common/popUp'
-import TipMes from '@/components/common/tipMes'
-import Loading from '@/components/common/loading'
-import XHR from '@/utils/request'
-import API from '@/utils/api.js'
+import PopUp from "@/components/common/popUp";
+import TipMes from "@/components/common/tipMes";
+import Loading from "@/components/common/loading";
+import XHR from "@/utils/request";
+import API from "@/utils/api.js";
 export default {
   mounted() {
     this.getReplaceOrderList();
@@ -43,7 +43,7 @@ export default {
   activated() {
     this.getReplaceOrderList();
   },
-  name: 'SubstituteOrder',
+  name: "SubstituteOrder",
   components: {
     PopUp,
     TipMes,
@@ -56,22 +56,29 @@ export default {
       isShow: false,
       isDisplay: false,
       isLoading: false,
-      message: '抱歉，未找到该车辆停车信息'
-    }
+      message: "抱歉，未找到该车辆停车信息"
+    };
   },
   methods: {
-    async againSurrender(carName, phone) { // 再次代缴
+    async againSurrender(carName, phone) {
+      // 再次代缴
       this.isLoading = true;
-      const result = await XHR.get(window.admin + API.getParkingPaymentInfo + '?licensePlateNumber=' + encodeURI(this.removeSpace(carName)));
+      const result = await XHR.get(window.admin + API.getParkingPaymentInfo + "?licensePlateNumber=" + encodeURI(this.removeSpace(carName)));
       if (JSON.parse(result).status === 200) {
         const dataResult = JSON.parse(result).data[0];
         this.dataRuselt = [
-          { name: '手机号', result: phone || null },
-          { name: '车牌', result: this.removeSpace(carName) },
-          { name: '停车时长', result: dataResult.elapsedTime % 60 === 0 ? dataResult.elapsedTime / 60 + '小时' : parseInt(dataResult.elapsedTime / 60) + '小时' + dataResult.elapsedTime % 60 + '分' },
-          { name: '所在车场', result: dataResult.parkName },
-          { name: '金额', result: dataResult.payable / 100 + '元' }
-        ]
+          { name: "手机号", result: phone || null },
+          { name: "车牌", result: this.removeSpace(carName) },
+          {
+            name: "停车时长",
+            result:
+              dataResult.elapsedTime % 60 === 0
+                ? dataResult.elapsedTime / 60 + "小时"
+                : parseInt(dataResult.elapsedTime / 60) + "小时" + dataResult.elapsedTime % 60 + "分"
+          },
+          { name: "所在车场", result: dataResult.parkName },
+          { name: "金额", result: dataResult.payable / 100 + "元" }
+        ];
         this.isLoading = false;
         this.isShow = true;
       } else {
@@ -79,7 +86,7 @@ export default {
         this.isDisplay = true;
         setTimeout(() => {
           this.isDisplay = false;
-        }, 1.5e3)
+        }, 1.5e3);
       }
     },
     async replacePayParkingFee(dataValue, carName, userPhone) {
@@ -91,61 +98,65 @@ export default {
         parkingGarageName: dataValue.parkName,
         phone: userPhone,
         userId: window.workid
-      })
+      });
       if (JSON.parse(valueData).status === 200) {
         this.isShow = false;
         this.getReplaceOrderList();
       } else {
-        alert(JSON.parse(valueData).msg)
+        alert(JSON.parse(valueData).msg);
       }
     },
     async onConfire(payResult) {
       const dataArray = [];
       payResult.forEach(ev => {
-        dataArray.push(ev.result)
+        dataArray.push(ev.result);
       });
-      console.log(dataArray)
-      const result = await XHR.get(window.admin + API.getParkingPaymentInfo + '?licensePlateNumber=' + encodeURI(dataArray[1]));
-      const valueResult = JSON.parse(result).data[0]
+      console.log(dataArray);
+      const result = await XHR.get(window.admin + API.getParkingPaymentInfo + "?licensePlateNumber=" + encodeURI(dataArray[1]));
+      const valueResult = JSON.parse(result).data[0];
       if (JSON.parse(result).status === 200) {
-        window.workgo.createPayOrder(valueResult.orderNo, '123456', '停车付款', '付款', 1, 'www.junl.cn', (data) => {
+        window.workgo.createPayOrder(valueResult.orderNo, "123456", "停车付款", "付款", 1, "www.junl.cn", data => {
           if (data["success"]) {
-            this.replacePayParkingFee(valueResult, dataArray[1], dataArray[0])
+            this.replacePayParkingFee(valueResult, dataArray[1], dataArray[0]);
           } else {
-            alert(data["errMsg"])
+            alert(data["errMsg"]);
           }
-        })
+        });
       } else {
-        alert(JSON.parse(result).msg)
+        alert(JSON.parse(result).msg);
       }
     },
-    onCancel (isState) { // 取消
+    onCancel(isState) {
+      // 取消
       this.isShow = isState;
     },
-    removeSpace(str) { // 移除空格
-      return str.replace(/\s/ig, '');
+    removeSpace(str) {
+      // 移除空格
+      return str.replace(/\s/gi, "");
     },
-    addSubstituteOrder() { // 新增代缴订单
-      this.$router.push({path: '/surrender'})
+    addSubstituteOrder() {
+      // 新增代缴订单
+      this.$router.push({ path: "/surrender" });
     },
-    async getReplaceOrderList() { // 获取代缴订单
+    async getReplaceOrderList() {
+      // 获取代缴订单
       var tempOrder = [];
-      const result = await XHR.get(window.admin + API.getReplaceOrderList + '?userId=' + window.workid);
+      const result = await XHR.get(window.admin + API.getReplaceOrderList + "?userId=" + window.workid);
       const dataList = JSON.parse(result).data;
       dataList.forEach(el => {
         tempOrder.push({
           phone: el.phone,
-          creationTime: el.creationTime.replace(/-/g, '.').slice(0, 16),
+          creationTime: el.creationTime.replace(/-/g, ".").slice(0, 16),
           money: el.money / 100,
-          licensePlateNumber: el.licensePlateNumber.replace(/\s/ig, ''),
+          licensePlateNumber: el.licensePlateNumber.replace(/\s/gi, ""),
           parkingGarageName: el.parkingGarageName,
           id: el.id
         });
       });
-      this.items = tempOrder
+      this.items = tempOrder;
     }
   }
-}
+};
 </script>
 <style scoped>
 .layoutBottom {
@@ -161,19 +172,19 @@ export default {
   height: 40px;
   margin-right: 30px;
 }
-.carName{
-  margin-right:20px;
+.carName {
+  margin-right: 20px;
 }
 .priceText {
   color: #5a9df3;
-  margin-left:10px;
+  margin-left: 10px;
 }
 .substituteBtn {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 156px;
-  height:56px;
+  height: 56px;
   border: 2px solid #5a9df3;
   border-radius: 4px;
   font-size: 28px;

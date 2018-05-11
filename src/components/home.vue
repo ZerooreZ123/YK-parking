@@ -2,7 +2,7 @@
   <div class="wrap">
     <div class="item" v-for="(item, index) in itemName" :key="index">
       <router-link class="linkTo" :to='item.link'>
-        <div class="single" >
+        <div class="single">
           <img class="photo" v-bind:src="item.photoSrc" alt="">
           <div class="text">{{item.text}}</div>
         </div>
@@ -25,11 +25,12 @@ export default {
     }, 100);
   },
   methods: {
-    workGoUser() { // 获取用户信息
-      window.workgo.getUserInfo((result) => {
+    workGoUser() {
+      // 获取用户信息
+      window.workgo.getUserInfo(result => {
         window.workPhone = result.mobile;
         window.workid = result.userId;
-      })
+      });
     }
   },
   data() {
