@@ -17,6 +17,7 @@ export default {
     setTimeout(() => {
       window.workgo.getAuth(window.appId, window.APPSercet, result => {
         if (result.success) {
+          // alert(result.errMsg);
           this.workGoUser();
         } else {
           alert(result.errMsg);

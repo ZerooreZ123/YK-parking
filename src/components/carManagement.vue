@@ -376,6 +376,7 @@ export default {
 .inputText {
   width: 100%;
   height: 40px;
+  padding: 0;
   font-size: 30px;
   text-indent: 30px;
   line-height: 40px;

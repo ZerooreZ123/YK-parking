@@ -94,7 +94,7 @@ export default {
 }
 .tip {
   width: 100%;
-  margin-bottom: 1px;
+  /* margin-bottom: 1px; */
   text-align: center;
   line-height: 40px;
   font-size: 24px;
