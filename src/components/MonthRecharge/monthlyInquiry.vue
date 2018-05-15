@@ -13,7 +13,7 @@
         </div>
       </div>
     </div>
-    <div @click="getCarCardInfo" class="button">查询</div>
+    <div @click="getCarCardInfo" class="button btn-center">查询</div>
     <tip-mes :msg="message" v-if="isDisplay"></tip-mes>
     <place-name v-if="isPlace" @onselect="onSelect($event)" @onclose="onClose($event)"></place-name>
     <loading v-if="isLoading"></loading>
@@ -130,7 +130,7 @@ export default {
   height: 118px;
   border-bottom: 2px solid #f7f7f7;
 }
-.inputBox::-webkit-input-placeholder {
+.inputText::-webkit-input-placeholder {
   color: #777777;
 }
 .inputText {
@@ -189,7 +189,7 @@ export default {
   justify-content: center;
   align-items: center;
   height: 86px;
-  width: 330px;
+  width: 328px;
   margin: 15px 13px;
   text-align: center;
   font-size: 30px;
@@ -202,10 +202,8 @@ export default {
   bottom: 0;
   left: 0;
   width: 100%;
-  padding: 35px 0;
-  text-align: center;
+  height: 100px;
   font-size: 30px;
-  line-height: 30px;
   color: #fff;
   background: #569bf6;
 }

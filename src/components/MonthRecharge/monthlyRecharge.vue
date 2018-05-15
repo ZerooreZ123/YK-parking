@@ -17,8 +17,10 @@
       </div>
       <div class="promptText">续费时长</div>
       <div class="carYardList">
-        <div @click="select(index)" :class="selectIndex === index?'selectYard':'carYard'" v-for="(item,index) in renewalLength" :key='index'>
-          {{item.ruleFee/100}}元/{{item.ruleAmount==1?"":item.ruleAmount}}月
+        <div class="carName" v-for="(item,index) in renewalLength" :key='index'>
+          <div @click="select(index)" :class="selectIndex === index?'selectYard':'carYard'">
+            {{item.ruleFee/100}}元/{{item.ruleAmount==1?"":item.ruleAmount}}月
+          </div>
         </div>
       </div>
     </div>
@@ -123,7 +125,7 @@ export default {
       });
       const valueResult = JSON.parse(result).data[0];
       if (JSON.parse(result).status === 200) {
-        window.workgo.createPayOrder(valueResult.orderNo, "123456", "停车付款", "付款", 1, "www.junl.cn", data => {
+        window.workgo.createPayOrder(valueResult.orderNo, "123456", "停车付款", "付款", valueResult.payable, "www.junl.cn", data => {
           if (data["success"]) {
             this.payCarCardFee(valueResult);
           } else {
@@ -184,7 +186,7 @@ export default {
   justify-content: center;
   align-items: center;
   height: 86px;
-  width: 330px;
+  width: 328px;
   margin: 15px 13px;
   text-align: center;
   font-size: 30px;
@@ -218,5 +220,8 @@ export default {
 .confirm {
   color: #fff;
   background: #569bf6;
+}
+.carName {
+  display: inline-block;
 }
 </style>

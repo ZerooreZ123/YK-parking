@@ -4,7 +4,7 @@
       <div class="inputBox">
         <input type="text" placeholder="车牌" class="inputText" v-model="inputValue" ref="inputFocus">
         <div class="transparentButton" @click="selectCar"></div>
-        <div @click="query(inputValue)" class="inquiry">查询</div>
+        <div @click="query(inputValue)" class="inquiry btn-center">查询</div>
       </div>
       <div class="forExample">例:苏A8888</div>
       <div class="block">
@@ -14,7 +14,7 @@
         </div>
         <div class="carList" v-for="(item, index) in carName" :key="index">
           <div class="car">{{item.licensePlateNumber}}</div>
-          <div @click="query(item.licensePlateNumber)" class="query">查询</div>
+          <div @click="query(item.licensePlateNumber)" class="query btn-center">查询</div>
         </div>
       </div>
       <div>
@@ -24,7 +24,7 @@
         </div>
         <div class="carList" v-for="(item, index) in carHistory" :key="index">
           <div class="car">{{item.licensePlateNumber}}</div>
-          <div @click="query(item.licensePlateNumber)" class="query">查询</div>
+          <div @click="query(item.licensePlateNumber)" class="query btn-center">查询</div>
         </div>
       </div>
     </div>
@@ -47,6 +47,7 @@ export default {
   },
   activated() {
     this.getCarList();
+    this.inputValue = null;
   },
   name: "TemporaryPay",
   components: {
@@ -111,7 +112,7 @@ export default {
       const result = await XHR.get(window.admin + API.getParkingPaymentInfo + "?licensePlateNumber=" + encodeURI(dataArray[0]));
       const valueResult = JSON.parse(result).data[0];
       if (JSON.parse(result).status === 200) {
-        window.workgo.createPayOrder(valueResult.orderNo, "123456", "停车付款", "付款", 1, "www.junl.cn", data => {
+        window.workgo.createPayOrder(valueResult.orderNo, "123456", "停车付款", "付款", valueResult.payable, "www.junl.cn", data => {
           if (data["success"]) {
             this.temporaryPayParkingFee(valueResult, dataArray[0]);
           } else {
@@ -199,7 +200,7 @@ export default {
   padding: 0 30px;
   border-bottom: 2px solid #f7f7f7;
 }
-.inputBox::-webkit-input-placeholder {
+.inputText::-webkit-input-placeholder {
   color: #777777;
 }
 .inputText {
@@ -224,11 +225,10 @@ export default {
 .inquiry,
 .query {
   width: 116px;
-  line-height: 56px;
+  height: 56px;
   font-size: 26px;
   border: 2px solid #569bf6;
   border-radius: 4px;
-  text-align: center;
   color: #569bf6;
 }
 .block {
@@ -266,5 +266,10 @@ export default {
 .car {
   font-size: 30px;
   color: #000;
+}
+.btn-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

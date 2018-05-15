@@ -36,6 +36,10 @@ export default {
     PlaceName,
     Loading
   },
+  activated() {
+    this.inputValue = null;
+    this.inputPhone = null;
+  },
   data() {
     return {
       dataRuselt: [],
@@ -96,7 +100,7 @@ export default {
       const result = await XHR.get(window.admin + API.getParkingPaymentInfo + "?licensePlateNumber=" + encodeURI(dataArray[0]));
       const valueResult = JSON.parse(result).data[0];
       if (JSON.parse(result).status === 200) {
-        window.workgo.createPayOrder(valueResult.orderNo, "123456", "停车付款", "付款", 1, "www.junl.cn", data => {
+        window.workgo.createPayOrder(valueResult.orderNo, "123456", "停车付款", "付款", valueResult.payable, "www.junl.cn", data => {
           if (data["success"]) {
             this.replacePayParkingFee(valueResult, dataArray[0]);
           } else {
@@ -161,7 +165,7 @@ export default {
   height: 118px;
   border-bottom: 2px solid #f7f7f7;
 }
-.inputBox::-webkit-input-placeholder {
+.inputText::-webkit-input-placeholder {
   color: #777777;
 }
 .inputText {

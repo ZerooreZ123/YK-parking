@@ -94,15 +94,7 @@ export default {
   width: 100%;
   background: #fff;
 }
-.inputBox {
-  display: flex;
-  align-items: center;
-  height: 118px;
-  border-bottom: 2px solid #f7f7f7;
-}
-.inputBox::-webkit-input-placeholder {
-  color: #777777;
-}
+
 .prompt {
   display: flex;
   justify-content: space-between;
@@ -130,15 +122,4 @@ export default {
   font-size: 30px;
   color: #000;
 }
-/* .selectColor {
-  display: inline-block;
-  width: 50px;
-  margin: 10px 10px;
-  padding: 10px 0px;
-  text-align: center;
-  font-size: 30px;
-  color: #96c1f9;
-  background: url("../../../static/images/btn_min.png") no-repeat;
-  background-size: 143px 65px;
-} */
 </style>

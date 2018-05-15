@@ -115,7 +115,7 @@ export default {
       const result = await XHR.get(window.admin + API.getParkingPaymentInfo + "?licensePlateNumber=" + encodeURI(dataArray[1]));
       const valueResult = JSON.parse(result).data[0];
       if (JSON.parse(result).status === 200) {
-        window.workgo.createPayOrder(valueResult.orderNo, "123456", "停车付款", "付款", 1, "www.junl.cn", data => {
+        window.workgo.createPayOrder(valueResult.orderNo, "123456", "停车付款", "付款", valueResult.payable, "www.junl.cn", data => {
           if (data["success"]) {
             this.replacePayParkingFee(valueResult, dataArray[1], dataArray[0]);
           } else {

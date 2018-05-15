@@ -10,7 +10,7 @@
             <span class="timeslot">{{item.startTime}} - {{item.endTime}}</span>
           </div>
         </div>
-        <div @click="Renewals(item.licensePlateNumber, item.parkingGarageName, item.parkId)" class="renew">续费</div>
+        <div @click="Renewals(item.licensePlateNumber, item.parkingGarageName, item.parkId)" class="renew btn-center">续费</div>
       </div>
     </div>
     <div class="invalidOrder">
@@ -138,9 +138,8 @@ export default {
 }
 .renew {
   width: 116px;
-  line-height: 56px;
+  height: 56px;
   border: 2px solid #5c9ef6;
-  text-align: center;
   border-radius: 5px;
   font-size: 26px;
   color: #5c9ef6;

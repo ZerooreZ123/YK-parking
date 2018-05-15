@@ -125,4 +125,7 @@ export default {
   color: #fff;
   background: #569bf6;
 }
+.inputBox::-webkit-input-placeholder {
+  color: #777777;
+}
 </style>

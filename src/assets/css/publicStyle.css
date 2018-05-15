@@ -38,3 +38,8 @@
   left: 0px;
   right: 0px;
 }
+.btn-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

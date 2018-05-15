@@ -8,8 +8,8 @@
             <span class="color1">{{item.color}}</span>
           </div>
           <div class="buttonBox">
-            <span class="cutOff" @click="deleteCar(index, 1)">删除</span>
-            <span @click='gotoOrder(index)' class="seeOrder">查看包月订单</span>
+            <span class="cutOff btn-center" @click="deleteCar(index, 1)">删除</span>
+            <span @click='gotoOrder(index)' class="seeOrder btn-center">查看包月订单</span>
           </div>
         </div>
       </div>
@@ -19,10 +19,10 @@
             <span class="licensePlateNumber">{{item.licensePlateNumber}}</span>
             <span class="color">{{item.color}}</span>
           </div>
-          <div @click="deleteCar(index, 2)" class="delete">删除</div>
+          <div @click="deleteCar(index, 2)" class="delete btn-center">删除</div>
         </div>
       </div>
-      <div @click="addCar" class="button">新增车辆</div>
+      <div @click="addCar" class="button btn-center">新增车辆</div>
       <div class="mask" v-if="flag">
         <div @click="abolish" class="blank"></div>
         <div class="popUp">
@@ -221,25 +221,19 @@ export default {
 .delete,
 .cutOff {
   width: 116px;
-  line-height: 56px;
+  height: 56px;
   font-size: 26px;
   border: 2px solid #e8e8e8;
   border-radius: 4px;
-  text-align: center;
   color: #999;
 }
-.cutOff {
-  display: inline-block;
-}
 .seeOrder {
-  display: inline-block;
   width: 196px;
   margin-left: 20px;
-  line-height: 56px;
+  height: 56px;
   font-size: 26px;
   border: 2px solid #c6defc;
   border-radius: 4px;
-  text-align: center;
   color: #62a2f7;
 }
 .carList {
@@ -350,10 +344,9 @@ export default {
   bottom: 0;
   left: 0;
   width: 100%;
-  padding: 35px 0;
+  height: 100px;
   text-align: center;
   font-size: 30px;
-  line-height: 30px;
   color: #fff;
   background: #569bf6;
 }
@@ -370,7 +363,7 @@ export default {
   height: 118px;
   border-bottom: 2px solid #f7f7f7;
 }
-.inputBox::-webkit-input-placeholder {
+.inputText::-webkit-input-placeholder {
   color: #777777;
 }
 .inputText {
@@ -424,7 +417,6 @@ export default {
   height: 56px;
   width: 143px;
   margin: 15px 15px;
-  text-align: center;
   font-size: 30px;
   color: #96c1f9;
   background: url("../../static/images/btn_min.png") no-repeat;
@@ -436,5 +428,10 @@ export default {
   left: 0;
   width: 750px;
   height: 118px;
+}
+.btn-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
