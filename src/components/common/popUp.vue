@@ -59,6 +59,7 @@ export default {
   z-index: 100;
 }
 .popUp {
+  position: relative;
   z-index: 101;
   width: 73%;
   height: 509px;
