@@ -29,9 +29,11 @@ import "@/assets/css/publicStyle.css";
 export default {
   mounted() {
     this.getTemporaryOrderList();
+    document.querySelector("title").innerText = "临停订单";
   },
   activated() {
     this.getTemporaryOrderList();
+    document.querySelector("title").innerText = "临停订单";
   },
   name: "TempOrder",
   data() {

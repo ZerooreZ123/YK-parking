@@ -36,9 +36,13 @@ export default {
     PlaceName,
     Loading
   },
+  mounted() {
+    document.querySelector("title").innerText = "临停代缴";
+  },
   activated() {
     this.inputValue = null;
     this.inputPhone = null;
+    document.querySelector("title").innerText = "临停代缴";
   },
   data() {
     return {
@@ -100,13 +104,22 @@ export default {
       const result = await XHR.get(window.admin + API.getParkingPaymentInfo + "?licensePlateNumber=" + encodeURI(dataArray[0]));
       const valueResult = JSON.parse(result).data[0];
       if (JSON.parse(result).status === 200) {
-        window.workgo.createPayOrder(valueResult.orderNo, "123456", "停车付款", "付款", valueResult.payable, "www.junl.cn", data => {
-          if (data["success"]) {
-            this.replacePayParkingFee(valueResult, dataArray[0]);
-          } else {
-            alert(data["errMsg"]);
-          }
-        });
+        if (parseInt(valueResult.payable, 10) === 0) {
+          this.message = "该车辆已缴费";
+          this.isDisplay = true;
+          setTimeout(() => {
+            this.isDisplay = false;
+          }, 1.5e3);
+          return false;
+        } else {
+          window.workgo.createPayOrder(valueResult.orderNo, window.deviceSn, "停车付款", "付款", valueResult.payable, "www.junl.cn", data => {
+            if (data["success"]) {
+              this.replacePayParkingFee(valueResult, dataArray[0]);
+            } else {
+              alert(data["errMsg"]);
+            }
+          });
+        }
       } else {
         alert(JSON.parse(result).msg);
       }

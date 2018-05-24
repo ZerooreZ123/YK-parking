@@ -23,6 +23,10 @@ export default {
         }
       });
     }, 100);
+    document.querySelector("title").innerText = "首页";
+  },
+  activated() {
+    document.querySelector("title").innerText = "首页";
   },
   methods: {
     workGoUser() {

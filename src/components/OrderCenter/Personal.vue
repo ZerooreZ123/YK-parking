@@ -16,6 +16,12 @@
 import "@/assets/css/publicStyle.css";
 export default {
   name: "Personal",
+  mounted() {
+    document.querySelector("title").innerText = "个人中心";
+  },
+  activated() {
+    document.querySelector("title").innerText = "个人中心";
+  },
   data() {
     return {
       list: [

@@ -38,9 +38,11 @@ import Loading from "@/components/common/loading";
 export default {
   mounted() {
     this.getCarCardInfo();
+    document.querySelector("title").innerText = "包月充值";
   },
   activated() {
     this.getCarCardInfo();
+    document.querySelector("title").innerText = "包月充值";
   },
   name: "MonthlyRecharge",
   components: {
@@ -125,7 +127,7 @@ export default {
       });
       const valueResult = JSON.parse(result).data[0];
       if (JSON.parse(result).status === 200) {
-        window.workgo.createPayOrder(valueResult.orderNo, "123456", "停车付款", "付款", valueResult.payable, "www.junl.cn", data => {
+        window.workgo.createPayOrder(valueResult.orderNo, window.deviceSn, "停车付款", "付款", valueResult.payable, "www.junl.cn", data => {
           if (data["success"]) {
             this.payCarCardFee(valueResult);
           } else {

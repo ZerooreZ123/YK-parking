@@ -34,9 +34,11 @@ import API from "@/utils/api.js";
 export default {
   mounted() {
     this.getMonthlyPlansOrderList();
+    document.querySelector("title").innerText = "包月订单";
   },
   activated() {
     this.getMonthlyPlansOrderList();
+    document.querySelector("title").innerText = "包月订单";
   },
   beforeDestroy() {
     window.tempCarNumber = null;

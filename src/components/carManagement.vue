@@ -26,7 +26,7 @@
       <div class="mask" v-if="flag">
         <div @click="abolish" class="blank"></div>
         <div class="popUp">
-          <div class="sureTip">确认删除苏A888888?</div>
+          <div class="sureTip">{{"确认删除" +tempCar +"?" }}</div>
           <div class="selectButton">
             <div @click="abolish" class="abolish">取消</div>
             <div @click="remove" class="sure">确认</div>
@@ -68,9 +68,11 @@ import API from "@/utils/api.js";
 export default {
   mounted() {
     this.getCarList();
+    document.querySelector("title").innerText = "车辆管理";
   },
   activated() {
     this.getCarList();
+    document.querySelector("title").innerText = "车辆管理";
   },
   components: {
     TipMes,
@@ -100,7 +102,8 @@ export default {
       selectIndex: 0, // 颜色index
       carId: null, // 车辆Id
       color: null, // 车辆颜色
-      inputValue: null // 输入框文本
+      inputValue: null, // 输入框文本
+      tempCar: null // 删除对应车
     };
   },
   methods: {
@@ -155,8 +158,10 @@ export default {
       // 弹出删除提示
       if (isMonth === 2) {
         this.carId = this.carYardName[index].id;
+        this.tempCar = this.carYardName[index].licensePlateNumber;
       } else {
         this.carId = this.monthlyCar[index].id;
+        this.tempCar = this.monthlyCar[index].licensePlateNumber;
       }
       this.flag = true;
     },
@@ -285,7 +290,7 @@ export default {
   position: relative;
   z-index: 101;
   width: 73%;
-  height: 210px;
+  height: 208px;
   margin-top: 326px;
   border-radius: 5px;
   font-size: 34px;
@@ -294,9 +299,10 @@ export default {
 }
 .sureTip {
   width: 100%;
-  margin: 40px 0 55px;
+  margin: 40px 0 60px;
   text-indent: 30px;
   font-size: 30px;
+  line-height: 30px;
   color: #000;
   background: #fff;
 }
@@ -308,7 +314,7 @@ export default {
   font-size: 30px;
 }
 .selectButton {
-  height: 78px;
+  height: 80px;
 }
 .select {
   height: 100px;

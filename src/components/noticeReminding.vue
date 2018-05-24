@@ -14,6 +14,10 @@ import API from "@/utils/api.js";
 export default {
   mounted() {
     this.getNotificationList();
+    document.querySelector("title").innerText = "通知提醒";
+  },
+  activated() {
+    document.querySelector("title").innerText = "通知提醒";
   },
   name: "NoticeReminding",
   data() {
@@ -44,13 +48,13 @@ export default {
   border-bottom: 2px solid #f7f7f7;
 }
 .text {
-  font-size: 26px;
+  font-size: 28px;
   line-height: 38px;
   color: #000;
 }
 .time {
   margin: 14px 0;
-  font-size: 24px;
+  font-size: 26px;
   color: #b3b3b3;
 }
 </style>

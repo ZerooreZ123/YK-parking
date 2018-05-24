@@ -29,6 +29,10 @@ import API from "@/utils/api.js";
 export default {
   mounted() {
     this.getParkingLotList();
+    document.querySelector("title").innerText = "包月查询";
+  },
+  activated() {
+    document.querySelector("title").innerText = "包月查询";
   },
   name: "MonthlyInquiry",
   components: {

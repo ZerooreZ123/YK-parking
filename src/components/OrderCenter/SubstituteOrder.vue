@@ -39,9 +39,11 @@ import API from "@/utils/api.js";
 export default {
   mounted() {
     this.getReplaceOrderList();
+    document.querySelector("title").innerText = "代缴订单";
   },
   activated() {
     this.getReplaceOrderList();
+    document.querySelector("title").innerText = "代缴订单";
   },
   name: "SubstituteOrder",
   components: {
@@ -56,7 +58,7 @@ export default {
       isShow: false,
       isDisplay: false,
       isLoading: false,
-      message: "抱歉，未找到该车辆停车信息"
+      message: null
     };
   },
   methods: {
@@ -83,6 +85,7 @@ export default {
         this.isShow = true;
       } else {
         this.isLoading = false;
+        this.message = "抱歉，未找到该车辆停车信息";
         this.isDisplay = true;
         setTimeout(() => {
           this.isDisplay = false;
@@ -115,13 +118,21 @@ export default {
       const result = await XHR.get(window.admin + API.getParkingPaymentInfo + "?licensePlateNumber=" + encodeURI(dataArray[1]));
       const valueResult = JSON.parse(result).data[0];
       if (JSON.parse(result).status === 200) {
-        window.workgo.createPayOrder(valueResult.orderNo, "123456", "停车付款", "付款", valueResult.payable, "www.junl.cn", data => {
-          if (data["success"]) {
-            this.replacePayParkingFee(valueResult, dataArray[1], dataArray[0]);
-          } else {
-            alert(data["errMsg"]);
-          }
-        });
+        if (parseInt(valueResult.payable, 10)) {
+          this.message = "该车辆已缴费";
+          this.isDisplay = true;
+          setTimeout(() => {
+            this.isDisplay = false;
+          }, 1.5e3);
+        } else {
+          window.workgo.createPayOrder(valueResult.orderNo, window.deviceSn, "停车付款", "付款", valueResult.payable, "www.junl.cn", data => {
+            if (data["success"]) {
+              this.replacePayParkingFee(valueResult, dataArray[1], dataArray[0]);
+            } else {
+              alert(data["errMsg"]);
+            }
+          });
+        }
       } else {
         alert(JSON.parse(result).msg);
       }
