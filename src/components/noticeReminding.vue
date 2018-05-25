@@ -48,7 +48,7 @@ export default {
   border-bottom: 2px solid #f7f7f7;
 }
 .text {
-  font-size: 28px;
+  font-size: 30px;
   line-height: 38px;
   color: #000;
 }

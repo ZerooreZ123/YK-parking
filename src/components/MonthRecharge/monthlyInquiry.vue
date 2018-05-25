@@ -33,6 +33,8 @@ export default {
   },
   activated() {
     document.querySelector("title").innerText = "包月查询";
+    this.selectIndex = 0;
+    this.inputText = null;
   },
   name: "MonthlyInquiry",
   components: {

@@ -118,7 +118,7 @@ export default {
       const result = await XHR.get(window.admin + API.getParkingPaymentInfo + "?licensePlateNumber=" + encodeURI(dataArray[1]));
       const valueResult = JSON.parse(result).data[0];
       if (JSON.parse(result).status === 200) {
-        if (parseInt(valueResult.payable, 10)) {
+        if (parseInt(valueResult.payable, 10) === 0) {
           this.message = "该车辆已缴费";
           this.isDisplay = true;
           setTimeout(() => {

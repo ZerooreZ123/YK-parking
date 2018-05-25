@@ -73,6 +73,7 @@ export default {
   activated() {
     this.getCarList();
     document.querySelector("title").innerText = "车辆管理";
+    this.inputValue = null;
   },
   components: {
     TipMes,
@@ -183,6 +184,8 @@ export default {
     addCar() {
       // 添加车辆
       this.show = true;
+      this.inputValue = null;
+      this.selectIndex = 0;
     },
     select(index) {
       // 选择颜色
